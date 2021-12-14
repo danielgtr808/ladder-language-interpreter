@@ -27,6 +27,12 @@ class Line implements LadderElement {
         return this._output;
     }
 
+    reset(): void {
+        this._input = false;
+        this.isActive = false;
+        this._output = false;
+    }
+
     resolve(): void {
         if(this.input == this.output) return;
         this._output = this.input

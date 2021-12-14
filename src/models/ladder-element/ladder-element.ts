@@ -11,6 +11,7 @@ interface LadderElement {
     readonly network: Network;
     readonly output: boolean;
 
+    reset(): void
     resolve(): void
 }
 

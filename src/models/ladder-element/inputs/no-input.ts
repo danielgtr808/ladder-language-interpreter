@@ -27,6 +27,12 @@ class NoInput implements LadderElement {
         return this._output;
     }
 
+    reset(): void {
+        this._input = false;
+        this.isActive = false;
+        this._output = false;
+    }
+
     resolve(): void {
         if(this.output == (this.input && this.isActive)) return;
         this._output = !this.output

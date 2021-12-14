@@ -36,8 +36,18 @@ class Network {
         );
     }
 
+    play() {
+        this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
+            x.input == true;
+        })
+    }
+
     resolve() {
         this.elements.forEach(x => x.resolve());
+    }
+
+    stop() {
+        this.elements.forEach(x => x.reset());
     }
 
 }

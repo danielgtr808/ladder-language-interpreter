@@ -21,9 +21,17 @@ class Simulation {
         return newNetwork;
     }
 
+    play() {
+        this.networks.forEach(x => x.play());
+    }
+
     resolve() {
         this.networks.forEach(x => x.resolve());
         this._timeInMS += this.timeStepInMS;
+    }
+
+    stop() {
+        this.networks.forEach(x => x.stop());
     }
 
 }

@@ -11,6 +11,17 @@ class Network {
 
     constructor(public readonly networkId: number, private _simulation: Simulation) { }
 
+    calculateElementInput(element: LadderElement): boolean {
+        if(element.coordinates.xInit == 0) return true;
+
+        let elementInput: boolean = false;
+        this.getPreviousElements(element).forEach(x => {
+            elementInput = elementInput || x.output;
+        })
+
+        return elementInput;
+    }
+
     createElement<T extends LadderElement>(elementConstructor: LadderElementConstructor<T>, coordinates: LadderCoordinates): T {
         const newElement = new elementConstructor(coordinates, this._nextElementId, this);
         this._nextElementId++;
@@ -36,14 +47,55 @@ class Network {
         );
     }
 
+    getNextElements(referenceElement: LadderElement): LadderElement[] {
+        return this.elements.filter(x => {
+            return referenceElement.coordinates.xEnd == x.coordinates.xInit && (
+                referenceElement.coordinates.yEnd == x.coordinates.yInit ||
+                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
+                referenceElement.coordinates.yInit == x.coordinates.yInit
+            );
+        });
+    }
+
+    getPreviousElements(referenceElement: LadderElement): LadderElement[] {
+        return this.elements.filter(x => {
+            return referenceElement.coordinates.xInit == x.coordinates.xEnd && (
+                referenceElement.coordinates.yInit == x.coordinates.yInit ||
+                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
+                referenceElement.coordinates.yEnd == x.coordinates.yInit
+                // the algorithm will take the reference element along with the
+                // others, so, another condition is attached to prevent this.
+            ) && referenceElement !== x ;
+        });
+    }
+
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
-            x.input == true;
+            x.input = true;
         })
     }
 
     resolve() {
-        this.elements.forEach(x => x.resolve());
+        let elementsThatChanged = this.elements.filter(x => x.changed);
+        for(let i = 0; i < elementsThatChanged.length; i++) {
+            const actualElement = elementsThatChanged[i];
+            actualElement.changed = false;
+            actualElement.resolve();
+
+            // A resolve calculates the new output of the element based on the input acquired
+            // on the last resolve loop, so, the "changed" setted to false, can turn into true
+            // gain, if the output changes.
+            if(!actualElement.changed) continue;
+
+            this.getNextElements(actualElement).forEach(x => {
+                x.input = this.calculateElementInput(x);
+                if(x.changed && x.hasNoPropagationTime) {
+                    elementsThatChanged.push(x);
+                }
+            })
+
+            actualElement.changed = false;
+        }
     }
 
     stop() {

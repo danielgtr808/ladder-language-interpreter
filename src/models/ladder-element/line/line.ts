@@ -2,7 +2,7 @@ import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 
-class NoInput implements LadderElement {
+class Line implements LadderElement {
 
     input: boolean = false;
     isActive: boolean = false;
@@ -17,4 +17,4 @@ class NoInput implements LadderElement {
 
 }
 
-export default NoInput
+export default Line

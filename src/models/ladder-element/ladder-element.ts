@@ -4,7 +4,7 @@ import LadderCoordinates from "./ladder-coordinates";
 interface LadderElement {
     changed: boolean;
     coordinates: LadderCoordinates;
-    readonly hasNoPropagationTime: boolean
+    readonly hasNoActivationTime: boolean
     readonly id: number;
     input: boolean;
     isActive: boolean;

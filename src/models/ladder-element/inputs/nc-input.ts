@@ -5,7 +5,7 @@ import LadderElement from "../ladder-element";
 class NcInput implements LadderElement {
 
     changed: boolean = false;
-    readonly hasNoPropagationTime: boolean = false;
+    readonly hasNoActivationTime: boolean = false;
     isActive: boolean = false;
 
     private _input: boolean = false;

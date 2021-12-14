@@ -9,7 +9,7 @@ class Network {
     
     private _nextElementId: number = 0;
 
-    constructor(public readonly networkId: number, private _simulation: Simulation) { }
+    constructor(public readonly networkId: number, public readonly simulation: Simulation) { }
 
     calculateElementInput(element: LadderElement): boolean {
         if(element.coordinates.xInit == 0) return true;
@@ -89,7 +89,7 @@ class Network {
 
             this.getNextElements(actualElement).forEach(x => {
                 x.input = this.calculateElementInput(x);
-                if(x.changed && x.hasNoPropagationTime) {
+                if(x.changed && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
             })

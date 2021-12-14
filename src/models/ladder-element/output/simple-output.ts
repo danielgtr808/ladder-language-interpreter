@@ -5,7 +5,7 @@ import LadderElement from "../ladder-element";
 class SimpleOutput implements LadderElement {
 
     changed: boolean = false;
-    readonly hasNoPropagationTime: boolean = true;
+    readonly hasNoPropagationTime: boolean = false;
     isActive: boolean = false;
 
     private _input: boolean = false;

@@ -5,6 +5,7 @@ import LadderElement from "../ladder-element";
 class NoInput implements LadderElement {
 
     changed: boolean = false;
+    readonly hasNoPropagationTime: boolean = false;
     isActive: boolean = false;
 
     private _input: boolean = false;

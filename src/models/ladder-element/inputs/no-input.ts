@@ -11,7 +11,7 @@ class NoInput implements LadderElement {
     private _input: boolean = false;
     private _output: boolean = false;
 
-    constructor(public readonly coordinates: LadderCoordinates, public readonly network: Network) { }
+    constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
 
     get input(): boolean {
         return this._input;

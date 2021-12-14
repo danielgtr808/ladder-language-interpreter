@@ -1,4 +1,4 @@
-import LadderElement from "./ladder-element";
+import LadderElement from "./ladder-element/ladder-element";
 import Simulation from "./simulation";
 
 class Network {

@@ -1,0 +1,11 @@
+{
+  "name": "ladder-language-interpreter",
+  "version": "1.0.0",
+  "description": "A library to interpret ladder language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniel Leite Baquini (danielbaquini@gmail.com)",
+  "license": "MIT"
+}

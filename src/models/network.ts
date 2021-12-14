@@ -5,7 +5,11 @@ class Network {
 
     elements: LadderElement[] = [];
     
-    constructor(private _simulation: Simulation) { }
+    constructor(public readonly networkId: number, private _simulation: Simulation) { }
+
+    resolve() {
+        this.elements.forEach(x => x.resolve());
+    }
 
 }
 

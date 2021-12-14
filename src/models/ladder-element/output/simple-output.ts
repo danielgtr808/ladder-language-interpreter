@@ -2,7 +2,7 @@ import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 
-class Output implements LadderElement {
+class SimpleOutput implements LadderElement {
 
     changed: boolean = false;
     readonly hasNoPropagationTime: boolean = true;
@@ -41,4 +41,4 @@ class Output implements LadderElement {
 
 }
 
-export default Output
+export default SimpleOutput

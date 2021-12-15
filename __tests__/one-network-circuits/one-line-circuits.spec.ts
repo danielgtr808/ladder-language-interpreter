@@ -109,3 +109,17 @@ test("TOF with input equal to false, should not increase timeElapsed after resol
 
     expect(timerOFF.elapsedTime).toBe(0);
 })
+
+test("Elements connected to true output should have the input true before the first resolve", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const timerOFF = network.createElement(TOF, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 })
+    const simpleOutput = network.createElement(SimpleOutput, { xInit: 2, xEnd: 3, yInit: 0, yEnd: 0 })
+
+    simulation.play();
+
+    expect(line.input).toBe(true);
+    expect(simpleOutput.input).toBe(true);
+
+})

@@ -15,7 +15,7 @@ class TOF implements LadderTimer {
 
     private _elapsedTime: number = 0;
     private _input: boolean = false;
-    private _output: boolean = false;
+    private _output: boolean = true;
     private _isActive: boolean = false;
     private _isCounting: boolean = false;
   
@@ -65,7 +65,7 @@ class TOF implements LadderTimer {
         this._elapsedTime = this.time;
         this._isActive = false;
         this._input = false;
-        this._output = false;
+        this._output = true;
     }
 
     resolve(): void {

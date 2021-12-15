@@ -73,10 +73,11 @@ class Network {
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
             x.input = true;
-        })
+        });
+        this.firstResolve();
     }
 
-    resolve() {
+    resolve(): LadderElement[] {
         let elementsThatChanged = this.elements.filter(x => this.hasElementchanged(x.changes));
         for(let i = 0; i < elementsThatChanged.length; i++) {
             const actualElement = elementsThatChanged[i];
@@ -98,11 +99,35 @@ class Network {
 
             actualElement.changes.output = false;
         }
+
+        return elementsThatChanged;
     }
 
     stop() {
         this.elements.forEach(x => x.reset());
     }
+
+    private firstResolve() {
+        // The first resolve is distinct from the others, because, in this case,
+        // it's used only to propagate the state from the elements that start with
+        // a "output" equal to "true". No "resolve" is done for the elements that
+        // have an activation time.
+        let initialElements = this.elements.filter(x => x.output);
+        for(let i = 0; i < initialElements.length; i++) {
+            const actualElement = initialElements[i];
+            if(actualElement.hasNoActivationTime) actualElement.resolve();
+            
+            this.getNextElements(actualElement).forEach(x => {
+                x.input = this.calculateElementInput(x);
+                if(x.changes && x.hasNoActivationTime) {
+                    initialElements.push(x);
+                }
+            })
+        }
+
+        return initialElements;
+    }
+
 
     private hasElementchanged(changesObject: LadderElementChanges): boolean {
         for (let value of Object.values(changesObject)) {

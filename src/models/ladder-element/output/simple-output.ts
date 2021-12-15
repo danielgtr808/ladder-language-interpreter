@@ -1,11 +1,13 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
 class SimpleOutput implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     isActive: boolean = false;
 

@@ -1,11 +1,13 @@
-import LadderCoordinates from "../ladder-element/ladder-coordinates";
-import LadderElementChanges from "../ladder-element/ladder-element-changes";
-import Network from "../network";
+import LadderCoordinates from "../ladder-coordinates";
+import LadderElementChanges from "../ladder-element-changes";
+import Network from "../../network";
 import LadderCounter from "./ladder-counter";
+import LadderDimensions from "../ladder-dimensions";
 
 class CTU implements LadderCounter {
     
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 2, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     presetValue: number = 0;
 
@@ -26,7 +28,7 @@ class CTU implements LadderCounter {
 
     set input(value: boolean) {
         if(this.input == value) return;
-        this.input = value;
+        this._input = value;
         this.changes.input = true;
 
         if(!this.input || this.isActive) return;
@@ -49,6 +51,14 @@ class CTU implements LadderCounter {
         this._currentValue = 0;
         this._input = false;
         this.isActive = false;
+        this._output = false;
+    }
+
+    resetTimer(): void {
+        this.changes.internalState = this.currentValue > 0
+        this._currentValue = 0;
+
+        this.changes.output = !this.output
         this._output = false;
     }
 

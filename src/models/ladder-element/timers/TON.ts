@@ -1,11 +1,13 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 import LadderTimer from "./ladder-timer";
 
 class TON implements LadderTimer {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     presetTime: number = 0;
     timeBaseInMS: number = 1;

@@ -4,6 +4,7 @@ import Line from "./../../src/models/ladder-element/line/line";
 import SimpleOutput from "./../../src/models/ladder-element/output/simple-output";
 import TON from "./../../src/models/ladder-element/timers/TON";
 import TOF from "./../../src/models/ladder-element/timers/TOF";
+import CTU from "./../../src/models/ladder-element/counters/CTU";
 
 test("NoInput inactive, all lines should have negative input after resolve", () => {
     const simulation = new Simulation(0.5)
@@ -53,7 +54,7 @@ test(`Active NoInput in series with lines and SimpleOutput at the end,
     simulation.resolve();
 
     expect(simpleOutput.output).toBe(true);
-})
+});
 
 test("TON in series with a simpleOutput, after two resolves, the simpleOutput input should be true", () => {
     const simulation = new Simulation(0.5)
@@ -92,7 +93,7 @@ test("TOF with preset equal to 1, step in ms is equal to 1, the TOF output shoul
     expect(timerOFF.elapsedTime).toBe(1);
     expect(timerOFF.output).toBe(false)
     expect(simulation.timeInMS).toBe(1);
-})
+});
 
 test("TOF with input equal to false, should not increase timeElapsed after resolves", () => {
     const simulation = new Simulation(0.5)
@@ -108,7 +109,7 @@ test("TOF with input equal to false, should not increase timeElapsed after resol
     simulation.resolve();
 
     expect(timerOFF.elapsedTime).toBe(0);
-})
+});
 
 test("Elements connected to true output should have the input true before the first resolve", () => {
     const simulation = new Simulation(0.5)
@@ -121,5 +122,17 @@ test("Elements connected to true output should have the input true before the fi
 
     expect(line.input).toBe(true);
     expect(simpleOutput.input).toBe(true);
+});
 
-})
+test("If CTU input is high, and presetValue is 1, CTU output should be high after first resolve", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const counterUp = network.createElement(CTU, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    counterUp.presetValue = 1;
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(counterUp.output).toBe(true);
+    expect(counterUp.currentValue).toBe(1);
+});

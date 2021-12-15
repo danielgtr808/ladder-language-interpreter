@@ -2,7 +2,8 @@ import Simulation from "./../../src/models/simulation";
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
 import Line from "./../../src/models/ladder-element/line/line";
 import SimpleOutput from "./../../src/models/ladder-element/output/simple-output";
-import TON from "./../../src/models/ladder-element/timers/TON"
+import TON from "./../../src/models/ladder-element/timers/TON";
+import TOF from "./../../src/models/ladder-element/timers/TOF";
 
 test("NoInput inactive, all lines should have negative input after resolve", () => {
     const simulation = new Simulation(0.5)
@@ -73,3 +74,38 @@ test("TON in series with a simpleOutput, after two resolves, the simpleOutput in
     expect(timerON.elapsedTime).toBe(1);
     expect(simpleOutput.input).toBe(true);
 });
+
+test("TOF with preset equal to 1, step in ms is equal to 1, the TOF output should wait 2 resolves to turn off", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const timerOFF = network.createElement(TOF, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    timerOFF.presetTime = 1;
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(timerOFF.elapsedTime).toBe(0.5);
+    expect(timerOFF.output).toBe(true);
+
+    simulation.resolve();
+
+    expect(timerOFF.elapsedTime).toBe(1);
+    expect(timerOFF.output).toBe(false)
+    expect(simulation.timeInMS).toBe(1);
+})
+
+test("TOF with input equal to false, should not increase timeElapsed after resolves", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const timerOFF = network.createElement(TOF, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
+    timerOFF.presetTime = 1;  
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(timerOFF.elapsedTime).toBe(0);
+
+    simulation.resolve();
+
+    expect(timerOFF.elapsedTime).toBe(0);
+})

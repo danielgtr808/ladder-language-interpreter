@@ -10,14 +10,15 @@ class TOF implements LadderTimer {
     // changed, then, it will not propagate.
     changes: LadderElementChanges = { input: false, internalState: false, output: true };
     readonly hasNoActivationTime: boolean = false;
+    presetTime: number = 0;
+    timeBaseInMS: number = 1;
 
     private _elapsedTime: number = 0;
     private _input: boolean = false;
+    private _output: boolean = false;
     private _isActive: boolean = false;
     private _isCounting: boolean = false;
-    private _output: boolean = true;
-    private _presetTime: number = 0;
-    private _timeBaseInMS: number = 1;
+  
   
     constructor(
         public coordinates: LadderCoordinates,
@@ -55,26 +56,8 @@ class TOF implements LadderTimer {
         return this._output;
     }
 
-    get presetTime(): number {
-        return this._presetTime;
-    }
-
-    set presetTime(value: number) {
-        this._presetTime = value;
-        this._elapsedTime = this.time;
-    }
-
     get time(): number {
         return this.presetTime*this.timeBaseInMS;
-    }
-
-    get timeBaseInMS(): number {
-        return this._timeBaseInMS;
-    }
-
-    set timeBaseInMS(value: number) {
-        this._timeBaseInMS = value;
-        this._elapsedTime = this.time;
     }
 
     reset(): void {
@@ -92,11 +75,13 @@ class TOF implements LadderTimer {
         this.changes.internalState = true;
         
         this._isActive = (this._elapsedTime >= this.time);
-        // If "isActive" and "output" are different, that means that, during this resolve,
-        // the "isActive" changed, and then, the "output" will change too, because "output"
-        // is a reflex of "isActive"
-        this.changes.output = (this.output !== this.isActive);
-        this._output = this._isActive;
+        // Output is always true, unless the isActive is true, thats why, they will
+        // always be different (changes.output always false), unless the elapsedTime
+        // is equal to the timer time, then, the isActive will be true, equal to the
+        // output, and then, the output will, indeed, change (output is the negated
+        // of the isActive).
+        this.changes.output = (this.output == this.isActive);
+        this._output = !this._isActive;
     }
 
 }

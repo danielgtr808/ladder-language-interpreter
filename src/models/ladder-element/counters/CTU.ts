@@ -26,16 +26,6 @@ class CTU implements LadderCounter {
         return this._input;
     }
 
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
-
-        if(!this.input || this.isActive) return;
-        this._currentValue++;
-        this.changes.internalState = true;
-    }
-
     get isActive(): boolean {
         return this._isActive;
     }
@@ -72,6 +62,17 @@ class CTU implements LadderCounter {
         // is a reflex of "isActive"
         this.changes.output = (this.output !== this.isActive);
         this._output = this._isActive;
+    }
+
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
+
+        if(!this.input || this.isActive) return;
+        this._currentValue++;
+        this.changes.internalState = true;
     }
 }
 

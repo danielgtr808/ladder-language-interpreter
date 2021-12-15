@@ -94,7 +94,7 @@ class Network {
 
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
-            x.input = true;
+            x.setInput(true);
         });
         this.firstResolve();
     }
@@ -113,7 +113,7 @@ class Network {
             if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
-                x.input = this.calculateElementInput(x);
+                x.setInput(this.calculateElementInput(x));
                 if(x.changes && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
@@ -140,7 +140,7 @@ class Network {
             if(actualElement.hasNoActivationTime) actualElement.resolve();
             
             this.getNextElements(actualElement).forEach(x => {
-                x.input = this.calculateElementInput(x);
+                x.setInput(this.calculateElementInput(x));
                 if(x.changes && x.hasNoActivationTime) {
                     initialElements.push(x);
                 }

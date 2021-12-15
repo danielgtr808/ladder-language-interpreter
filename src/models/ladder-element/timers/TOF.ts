@@ -36,14 +36,6 @@ class TOF implements LadderTimer {
         return this._input;
     }
 
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this.changes.input = true;
-        this._elapsedTime = 0;
-        this._input = value;
-        this._isCounting = value;
-    }
-
     get isActive(): boolean {
         return this._isActive;
     }
@@ -84,6 +76,14 @@ class TOF implements LadderTimer {
         // of the isActive).
         this.changes.output = (this.output == this.isActive);
         this._output = !this._isActive;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this.changes.input = true;
+        this._elapsedTime = 0;
+        this._input = value;
+        this._isCounting = value;
     }
 
 }

@@ -9,13 +9,14 @@ interface LadderElement {
     readonly dimensions: LadderDimensions;
     readonly hasNoActivationTime: boolean
     readonly id: number;
-    input: boolean;
+    readonly input: boolean;
     isActive: boolean;
     readonly network: Network;
     readonly output: boolean;
 
     reset(): void
     resolve(): void
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates): void
 }
 
 export default LadderElement

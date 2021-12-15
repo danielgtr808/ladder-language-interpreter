@@ -20,12 +20,6 @@ class SimpleOutput implements LadderElement {
         return this._input;
     }
 
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
-    }
-
     get output(): boolean {
         return this._output;
     }
@@ -41,6 +35,12 @@ class SimpleOutput implements LadderElement {
         if(this.input == this.output) return;
         this._output = this.input
         this.changes.output = true;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
     }
 
 }

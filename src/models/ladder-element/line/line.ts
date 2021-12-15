@@ -16,14 +16,9 @@ class Line implements LadderElement {
 
     constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
 
+
     get input(): boolean {
         return this._input;
-    }
-
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
     }
 
     get output(): boolean {
@@ -40,6 +35,12 @@ class Line implements LadderElement {
         if(this.input == this.output) return;
         this._output = this.input
         this.changes.output = true;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates): void {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
     }
 
 }

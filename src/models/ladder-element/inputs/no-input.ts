@@ -20,12 +20,6 @@ class NoInput implements LadderElement {
         return this._input;
     }
 
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
-    }
-
     get output(): boolean {
         return this._output;
     }
@@ -41,6 +35,12 @@ class NoInput implements LadderElement {
         if(this.output == (this.input && this.isActive)) return;
         this._output = !this.output
         this.changes.output = true;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates): void {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
     }
 
 }

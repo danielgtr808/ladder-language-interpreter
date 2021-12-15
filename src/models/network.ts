@@ -4,10 +4,16 @@ import LadderElementChanges from "./ladder-element/ladder-element-changes";
 import LadderElementConstructor from "./ladder-element/ladder-element-constructor";
 import Simulation from "./simulation";
 
+type CoordinateInUse = {
+    coordinates: LadderCoordinates,
+    element: LadderElement
+}
+
 class Network {
 
     elements: LadderElement[] = [];
     
+    private _coordinatesInUse: CoordinateInUse[] = []
     private _nextElementId: number = 0;
 
     constructor(public readonly networkId: number, public readonly simulation: Simulation) { }
@@ -27,12 +33,28 @@ class Network {
         const newElement = new elementConstructor(coordinates, this._nextElementId, this);
         this._nextElementId++;
 
-        const elementToReplace = this.getElementByCoordinates(coordinates);
-        if(elementToReplace) {
-            this.elements.splice(
-                this.elements.findIndex(x => x == elementToReplace),
-                1
-            )
+        for(let y = 0; y < newElement.dimensions.height; y++) {
+            for(let x = 0; x < newElement.dimensions.width; x++) {
+                const calculatedCoordinates: LadderCoordinates = {
+                    xEnd: coordinates.xEnd + x,
+                    xInit: coordinates.xInit + x,
+                    yEnd: coordinates.yEnd + y,
+                    yInit: coordinates.yInit + y
+                }
+                const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
+
+                if(!elementToReplace) {
+                    this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
+                    continue;
+                };
+
+                this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
+                // The "!" after the find function means that, it's guaranteed that the
+                // object will be founded. Thats because, the same function that create
+                // the elements (this function) also pushes then into usable coordinates
+                // array, so, it's guaranted that they will be founded. 
+                this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
+            }
         }
 
         this.elements.push(newElement)
@@ -40,12 +62,12 @@ class Network {
     }
 
     getElementByCoordinates(coordinates: LadderCoordinates): LadderElement | undefined {
-        return this.elements.find(x => 
+        return this._coordinatesInUse.find(x => 
             x.coordinates.xEnd == coordinates.xEnd &&
             x.coordinates.xInit == coordinates.xInit &&
             x.coordinates.yEnd == coordinates.yEnd &&
             x.coordinates.yInit == coordinates.yInit
-        );
+        )?.element;
     }
 
     getNextElements(referenceElement: LadderElement): LadderElement[] {

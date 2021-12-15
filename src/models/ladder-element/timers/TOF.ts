@@ -3,18 +3,21 @@ import LadderCoordinates from "../ladder-coordinates";
 import LadderElementChanges from "../ladder-element-changes";
 import LadderTimer from "./ladder-timer";
 
-class TON implements LadderTimer {
+class TOF implements LadderTimer {
 
-    changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    // "output" starts changed, because, the propagation of the output is only for changed
+    // output. The TOF starts with "output" setted to true, but, if it's not marked as
+    // changed, then, it will not propagate.
+    changes: LadderElementChanges = { input: false, internalState: false, output: true };
     readonly hasNoActivationTime: boolean = false;
-    presetTime: number = 0;
-    timeBaseInMS: number = 1;
 
     private _elapsedTime: number = 0;
     private _input: boolean = false;
-    private _output: boolean = false;
     private _isActive: boolean = false;
     private _isCounting: boolean = false;
+    private _output: boolean = true;
+    private _presetTime: number = 0;
+    private _timeBaseInMS: number = 1;
   
     constructor(
         public coordinates: LadderCoordinates,
@@ -52,13 +55,31 @@ class TON implements LadderTimer {
         return this._output;
     }
 
+    get presetTime(): number {
+        return this._presetTime;
+    }
+
+    set presetTime(value: number) {
+        this._presetTime = value;
+        this._elapsedTime = this.time;
+    }
+
     get time(): number {
         return this.presetTime*this.timeBaseInMS;
     }
 
+    get timeBaseInMS(): number {
+        return this._timeBaseInMS;
+    }
+
+    set timeBaseInMS(value: number) {
+        this._timeBaseInMS = value;
+        this._elapsedTime = this.time;
+    }
+
     reset(): void {
-        this.changes = { input: false, internalState: false, output: false };
-        this._elapsedTime = 0;
+        this.changes = { input: false, internalState: false, output: true };
+        this._elapsedTime = this.time;
         this._isActive = false;
         this._input = false;
         this._output = false;
@@ -80,4 +101,4 @@ class TON implements LadderTimer {
 
 }
 
-export default TON
+export default TOF

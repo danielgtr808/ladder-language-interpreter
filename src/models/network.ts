@@ -1,5 +1,6 @@
 import LadderCoordinates from "./ladder-element/ladder-coordinates";
 import LadderElement from "./ladder-element/ladder-element";
+import LadderElementChanges from "./ladder-element/ladder-element-changes";
 import LadderElementConstructor from "./ladder-element/ladder-element-constructor";
 import Simulation from "./simulation";
 
@@ -9,7 +10,7 @@ class Network {
     
     private _nextElementId: number = 0;
 
-    constructor(public readonly networkId: number, private _simulation: Simulation) { }
+    constructor(public readonly networkId: number, public readonly simulation: Simulation) { }
 
     calculateElementInput(element: LadderElement): boolean {
         if(element.coordinates.xInit == 0) return true;
@@ -72,34 +73,68 @@ class Network {
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
             x.input = true;
-        })
+        });
+        this.firstResolve();
     }
 
-    resolve() {
-        let elementsThatChanged = this.elements.filter(x => x.changed);
+    resolve(): LadderElement[] {
+        let elementsThatChanged = this.elements.filter(x => this.hasElementchanged(x.changes));
         for(let i = 0; i < elementsThatChanged.length; i++) {
             const actualElement = elementsThatChanged[i];
-            actualElement.changed = false;
+            actualElement.changes.input = false;
+            actualElement.changes.internalState = false;
             actualElement.resolve();
 
             // A resolve calculates the new output of the element based on the input acquired
             // on the last resolve loop, so, the "changed" setted to false, can turn into true
             // gain, if the output changes.
-            if(!actualElement.changed) continue;
+            if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
                 x.input = this.calculateElementInput(x);
-                if(x.changed && x.hasNoPropagationTime) {
+                if(x.changes && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
             })
 
-            actualElement.changed = false;
+            actualElement.changes.output = false;
         }
+
+        return elementsThatChanged;
     }
 
     stop() {
         this.elements.forEach(x => x.reset());
+    }
+
+    private firstResolve() {
+        // The first resolve is distinct from the others, because, in this case,
+        // it's used only to propagate the state from the elements that start with
+        // a "output" equal to "true". No "resolve" is done for the elements that
+        // have an activation time.
+        let initialElements = this.elements.filter(x => x.output);
+        for(let i = 0; i < initialElements.length; i++) {
+            const actualElement = initialElements[i];
+            if(actualElement.hasNoActivationTime) actualElement.resolve();
+            
+            this.getNextElements(actualElement).forEach(x => {
+                x.input = this.calculateElementInput(x);
+                if(x.changes && x.hasNoActivationTime) {
+                    initialElements.push(x);
+                }
+            })
+        }
+
+        return initialElements;
+    }
+
+
+    private hasElementchanged(changesObject: LadderElementChanges): boolean {
+        for (let value of Object.values(changesObject)) {
+            if(value) return value;
+        }
+
+        return false;
     }
 
 }

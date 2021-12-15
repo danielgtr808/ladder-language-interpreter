@@ -3,10 +3,10 @@ import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
-class Line implements LadderElement {
+class NcInput implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly hasNoActivationTime: boolean = true;
+    readonly hasNoActivationTime: boolean = false;
     isActive: boolean = false;
 
     private _input: boolean = false;
@@ -29,17 +29,18 @@ class Line implements LadderElement {
     }
 
     reset(): void {
+        this.changes = { input: false, internalState: false, output: false };
         this._input = false;
         this.isActive = false;
         this._output = false;
     }
 
     resolve(): void {
-        if(this.input == this.output) return;
-        this._output = this.input
+        if(this.output == (this.input && !this.isActive)) return;
+        this._output = !this.output
         this.changes.output = true;
     }
 
 }
 
-export default Line
+export default NcInput

@@ -2,10 +2,10 @@ import Simulation from "./../../src/models/simulation";
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
 import Line from "./../../src/models/ladder-element/line/line";
 import SimpleOutput from "./../../src/models/ladder-element/output/simple-output";
-
+import TON from "./../../src/models/ladder-element/timers/TON"
 
 test("NoInput inactive, all lines should have negative input after resolve", () => {
-    const simulation = new Simulation()
+    const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
     const noInput = network.createElement(NoInput, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
     const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
@@ -33,10 +33,10 @@ test("NoInput is active, all lines should have positive input after resolve", ()
     expect(line2.input).toBe(true);
 });
 
-describe(`Active NoInput in series with lines and SimpleOutput at the end, 
+test(`Active NoInput in series with lines and SimpleOutput at the end, 
           SimpleOutput input should be true at the first resolve and
           output should be true at the second resolve`, () => {
-    const simulation = new Simulation()
+    const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
     const noInput = network.createElement(NoInput, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
     noInput.isActive = true;
@@ -53,3 +53,23 @@ describe(`Active NoInput in series with lines and SimpleOutput at the end,
 
     expect(simpleOutput.output).toBe(true);
 })
+
+test("TON in series with a simpleOutput, after two resolves, the simpleOutput input should be true", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const timerON = network.createElement(TON, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    timerON.presetTime = 1;
+
+    const simpleOutput = network.createElement(SimpleOutput, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(timerON.elapsedTime).toBe(0.5);
+    expect(simpleOutput.input).toBe(false);
+
+    simulation.resolve();
+
+    expect(timerON.elapsedTime).toBe(1);
+    expect(simpleOutput.input).toBe(true);
+});

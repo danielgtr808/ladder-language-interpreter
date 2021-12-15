@@ -1,16 +1,18 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderElementChanges from "../ladder-element-changes";
 import LadderTimer from "./ladder-timer";
 
 class TON implements LadderTimer {
 
-    changed: boolean = false;
+    changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly hasNoActivationTime: boolean = false;
     presetTime: number = 0;
     timeBaseInMS: number = 1;
 
     private _elapsedTime: number = 0;
     private _input: boolean = false;
+    private _output: boolean = false;
     private _isActive: boolean = false;
     private _isCounting: boolean = false;
   
@@ -19,13 +21,6 @@ class TON implements LadderTimer {
         public readonly id: number,
         public readonly network: Network
     ) { }
-
-    reset(): void {
-        throw new Error("Method not implemented.");
-    }
-    resolve(): void {
-        throw new Error("Method not implemented.");
-    }
 
     get elapsedTime(): number {
         return this._elapsedTime;
@@ -37,7 +32,7 @@ class TON implements LadderTimer {
 
     set input(value: boolean) {
         if(this.input == value) return;
-        this.changed = true;
+        this.changes.input = true;
         this._elapsedTime = 0;
         this._input = value;
         this._isCounting = value;
@@ -54,20 +49,33 @@ class TON implements LadderTimer {
     }
 
     get output(): boolean {
-        return false;
+        return this._output;
     }
 
     get time(): number {
         return this.presetTime*this.timeBaseInMS;
     }
 
-    evaluate(): void {        
-        if(!this.isCounting || this.isActive) return;
-        this._elapsedTime += this.network.simulation.timeStepInMS;
-        this.changed = true;
-        this._isActive = (this._elapsedTime >= this.time);
+    reset(): void {
+        this._isActive = false;
+        this._input = false;
+        this._output = false;
     }
-    
+
+    resolve(): void {
+        if(!this.isCounting || this.isActive) return;
+
+        this._elapsedTime += this.network.simulation.timeStepInMS;
+        this.changes.internalState = true;
+        
+        this._isActive = (this._elapsedTime >= this.time);
+        // If "isActive" and "output" are different, that means that, during this resolve,
+        // the "isActive" changed, and then, the "output" will change too, because "output"
+        // is a reflex of "isActive"
+        this.changes.output = (this.output !== this.isActive);
+        this._output = this._isActive;
+    }
+
 }
 
 export default TON

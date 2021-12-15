@@ -1,10 +1,11 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
+import LadderElementChanges from "../ladder-element-changes";
 
 class Line implements LadderElement {
 
-    changed: boolean = false;
+    changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly hasNoActivationTime: boolean = true;
     isActive: boolean = false;
 
@@ -20,7 +21,7 @@ class Line implements LadderElement {
     set input(value: boolean) {
         if(this.input == value) return;
         this._input = value;
-        this.changed = true;
+        this.changes.input = true;
     }
 
     get output(): boolean {
@@ -36,7 +37,7 @@ class Line implements LadderElement {
     resolve(): void {
         if(this.input == this.output) return;
         this._output = this.input
-        this.changed = true;
+        this.changes.output = true;
     }
 
 }

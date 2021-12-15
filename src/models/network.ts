@@ -1,5 +1,6 @@
 import LadderCoordinates from "./ladder-element/ladder-coordinates";
 import LadderElement from "./ladder-element/ladder-element";
+import LadderElementChanges from "./ladder-element/ladder-element-changes";
 import LadderElementConstructor from "./ladder-element/ladder-element-constructor";
 import Simulation from "./simulation";
 
@@ -76,30 +77,39 @@ class Network {
     }
 
     resolve() {
-        let elementsThatChanged = this.elements.filter(x => x.changed);
+        let elementsThatChanged = this.elements.filter(x => this.hasElementchanged(x.changes));
         for(let i = 0; i < elementsThatChanged.length; i++) {
             const actualElement = elementsThatChanged[i];
-            actualElement.changed = false;
+            actualElement.changes.input = false;
+            actualElement.changes.internalState = false;
             actualElement.resolve();
 
             // A resolve calculates the new output of the element based on the input acquired
             // on the last resolve loop, so, the "changed" setted to false, can turn into true
             // gain, if the output changes.
-            if(!actualElement.changed) continue;
+            if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
                 x.input = this.calculateElementInput(x);
-                if(x.changed && x.hasNoActivationTime) {
+                if(x.changes && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
             })
 
-            actualElement.changed = false;
+            actualElement.changes.output = false;
         }
     }
 
     stop() {
         this.elements.forEach(x => x.reset());
+    }
+
+    private hasElementchanged(changesObject: LadderElementChanges): boolean {
+        for (let value of Object.values(changesObject)) {
+            if(value) return value;
+        }
+
+        return false;
     }
 
 }

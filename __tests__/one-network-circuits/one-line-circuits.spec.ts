@@ -5,13 +5,15 @@ import SimpleOutput from "./../../src/models/ladder-element/output/simple-output
 import TON from "./../../src/models/ladder-element/timers/TON";
 import TOF from "./../../src/models/ladder-element/timers/TOF";
 import CTU from "./../../src/models/ladder-element/counters/CTU";
+import NcInput from "./../../src/models/ladder-element/inputs/nc-input";
+import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
 
 test("NoInput inactive, all lines should have negative input after resolve", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const noInput = network.createElement(NoInput, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
-    const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
-    const line2 = network.createElement(Line, { xInit: 2, xEnd: 3, yInit: 0, yEnd: 0 });
+    const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 0, 0));
+    const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+    const line2 = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -23,10 +25,10 @@ test("NoInput inactive, all lines should have negative input after resolve", () 
 test("NoInput is active, all lines should have positive input after resolve", () => {
     const simulation = new Simulation()
     const network = simulation.createNetwork();
-    const noInput = network.createElement(NoInput, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 0, 0));
     noInput.isActive = true;
-    const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
-    const line2 = network.createElement(Line, { xInit: 2, xEnd: 3, yInit: 0, yEnd: 0 });
+    const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+    const line2 = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -40,10 +42,10 @@ test(`Active NoInput in series with lines and SimpleOutput at the end,
           output should be true at the second resolve`, () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const noInput = network.createElement(NoInput, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 0, 0));
     noInput.isActive = true;
-    const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
-    const simpleOutput = network.createElement(SimpleOutput, { xInit: 2, xEnd: 3, yInit: 0, yEnd: 0 })
+    const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -59,10 +61,10 @@ test(`Active NoInput in series with lines and SimpleOutput at the end,
 test("TON in series with a simpleOutput, after two resolves, the simpleOutput input should be true", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const timerON = network.createElement(TON, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const timerON = network.createElement(TON, new LadderCoordinates(0, 1, 0, 0));
     timerON.presetTime = 1;
-
-    const simpleOutput = network.createElement(SimpleOutput, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
+    
+    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(1, 2, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -79,7 +81,7 @@ test("TON in series with a simpleOutput, after two resolves, the simpleOutput in
 test("TOF with preset equal to 1, step in ms is equal to 1, the TOF output should wait 2 resolves to turn off", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const timerOFF = network.createElement(TOF, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const timerOFF = network.createElement(TOF, new LadderCoordinates(0, 1, 0, 0));
     timerOFF.presetTime = 1;
 
     simulation.play();
@@ -98,7 +100,7 @@ test("TOF with preset equal to 1, step in ms is equal to 1, the TOF output shoul
 test("TOF with input equal to false, should not increase timeElapsed after resolves", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const timerOFF = network.createElement(TOF, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 });
+    const timerOFF = network.createElement(TOF, new LadderCoordinates(1, 2, 0, 0));
     timerOFF.presetTime = 1;  
 
     simulation.play();
@@ -114,9 +116,9 @@ test("TOF with input equal to false, should not increase timeElapsed after resol
 test("Elements connected to true output should have the input true before the first resolve", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const timerOFF = network.createElement(TOF, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
-    const line = network.createElement(Line, { xInit: 1, xEnd: 2, yInit: 0, yEnd: 0 })
-    const simpleOutput = network.createElement(SimpleOutput, { xInit: 2, xEnd: 3, yInit: 0, yEnd: 0 })
+    const timerOFF = network.createElement(TOF, new LadderCoordinates(0, 1, 0, 0));
+    const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
 
@@ -127,7 +129,7 @@ test("Elements connected to true output should have the input true before the fi
 test("If CTU input is high, and presetValue is 1, CTU output should be high after first resolve", () => {
     const simulation = new Simulation(0.5)
     const network = simulation.createNetwork();
-    const counterUp = network.createElement(CTU, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const counterUp = network.createElement(CTU, new LadderCoordinates(0, 1, 0, 0));
     counterUp.presetValue = 1;
 
     simulation.play();
@@ -140,8 +142,26 @@ test("If CTU input is high, and presetValue is 1, CTU output should be high afte
 test("On creating CTU, should ocupy two coordinates on the network", () => {
     const simulation = new Simulation(0.5);
     const network = simulation.createNetwork();
-    const counterUp = network.createElement(CTU, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+    const counterUp = network.createElement(CTU, new LadderCoordinates(0, 1, 0, 0));
 
-    expect(network.getElementByCoordinates({ xInit: 0, xEnd: 1, yInit: 1, yEnd: 1 })).toEqual(counterUp);
-    expect(network.getElementByCoordinates({ xInit: 0, xEnd: 1, yInit: 1, yEnd: 1 })).toBeDefined();
+    expect(network.getElementByCoordinates(new LadderCoordinates(0, 1, 1, 1))).toEqual(counterUp);
+    expect(network.getElementByCoordinates(new LadderCoordinates(0, 1, 1, 1))).toBeDefined();
+})
+
+test("On reseting the CTU, the presetValue should go to zero", () => {
+    const simulation = new Simulation(0.5);
+    const network = simulation.createNetwork();
+    const ncInput = network.createElement(NcInput, new LadderCoordinates(0, 1, 0, 0));
+    const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 1, 1));
+    const counterUp = network.createElement(CTU, new LadderCoordinates(1, 2, 0, 0));
+    counterUp.presetValue = 10.
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(counterUp.currentValue).toBe(1);
+
+    counterUp.setInput(true, noInput.coordinates)
+
+    expect(counterUp.currentValue).toBe(0);
 })

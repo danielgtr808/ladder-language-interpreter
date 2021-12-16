@@ -35,12 +35,12 @@ class Network {
 
         for(let y = 0; y < newElement.dimensions.height; y++) {
             for(let x = 0; x < newElement.dimensions.width; x++) {
-                const calculatedCoordinates: LadderCoordinates = {
-                    xEnd: coordinates.xEnd + x,
-                    xInit: coordinates.xInit + x,
-                    yEnd: coordinates.yEnd + y,
-                    yInit: coordinates.yInit + y
-                }
+                const calculatedCoordinates: LadderCoordinates = new LadderCoordinates(
+                    coordinates.xEnd + x,
+                    coordinates.xInit + x,
+                    coordinates.yEnd + y,
+                    coordinates.yInit + y    
+                );
                 const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
 
                 if(!elementToReplace) {
@@ -62,34 +62,20 @@ class Network {
     }
 
     getElementByCoordinates(coordinates: LadderCoordinates): LadderElement | undefined {
-        return this._coordinatesInUse.find(x => 
-            x.coordinates.xEnd == coordinates.xEnd &&
-            x.coordinates.xInit == coordinates.xInit &&
-            x.coordinates.yEnd == coordinates.yEnd &&
-            x.coordinates.yInit == coordinates.yInit
-        )?.element;
+        return this._coordinatesInUse.find(x => x.coordinates.areEqual(coordinates))?.element;
     }
 
     getNextElements(referenceElement: LadderElement): LadderElement[] {
-        return this.elements.filter(x => {
-            return referenceElement.coordinates.xEnd == x.coordinates.xInit && (
-                referenceElement.coordinates.yEnd == x.coordinates.yInit ||
-                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
-                referenceElement.coordinates.yInit == x.coordinates.yInit
-            );
-        });
+        return this.elements.filter(x => x.coordinates.isNextCoordinate(referenceElement.coordinates));
     }
 
     getPreviousElements(referenceElement: LadderElement): LadderElement[] {
-        return this.elements.filter(x => {
-            return referenceElement.coordinates.xInit == x.coordinates.xEnd && (
-                referenceElement.coordinates.yInit == x.coordinates.yInit ||
-                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
-                referenceElement.coordinates.yEnd == x.coordinates.yInit
-                // the algorithm will take the reference element along with the
-                // others, so, another condition is attached to prevent this.
-            ) && referenceElement !== x ;
-        });
+        return this.elements.filter(x => 
+            x.coordinates.isPreviousCoordinate(referenceElement.coordinates)
+            // the algorithm will take the reference element along with the
+            // others, so, another condition is attached to prevent this.
+            && referenceElement !== x
+        );
     }
 
     play() {

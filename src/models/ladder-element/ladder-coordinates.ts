@@ -14,18 +14,18 @@ class LadderCoordinates {
     }
 
     isNextCoordinate(otherCoordinate: LadderCoordinates): boolean {        
-        return this.xEnd == otherCoordinate.xInit && (
-            this.yEnd == otherCoordinate.yInit ||
+        return this.xInit == otherCoordinate.xEnd && (
             this.yInit == otherCoordinate.yEnd ||
+            this.yEnd == otherCoordinate.yInit ||
             this.yInit == otherCoordinate.yInit
         );
     }
 
     isPreviousCoordinate(otherCoordinate: LadderCoordinates): boolean {
-        return this.xInit == otherCoordinate.xEnd && (
+        return this.xEnd == otherCoordinate.xInit && (
             this.yInit == otherCoordinate.yInit ||
-            this.yInit == otherCoordinate.yEnd ||
-            this.yEnd == otherCoordinate.yInit
+            this.yEnd == otherCoordinate.yInit ||
+            this.yInit == otherCoordinate.yEnd
         )
     }
 }

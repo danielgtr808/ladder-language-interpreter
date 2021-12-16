@@ -36,10 +36,10 @@ class Network {
         for(let y = 0; y < newElement.dimensions.height; y++) {
             for(let x = 0; x < newElement.dimensions.width; x++) {
                 const calculatedCoordinates: LadderCoordinates = new LadderCoordinates(
-                    coordinates.xEnd + x,
                     coordinates.xInit + x,
-                    coordinates.yEnd + y,
-                    coordinates.yInit + y    
+                    coordinates.xEnd + x,
+                    coordinates.yInit + y,
+                    coordinates.yEnd + y
                 );
                 const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
 

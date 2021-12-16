@@ -22,6 +22,15 @@ class LadderCoordinates {
         );
     }
 
+    incrementY(value: number): LadderCoordinates {
+        return new LadderCoordinates(
+            this.xInit,
+            this.xEnd,
+            this.yInit + value,
+            this.yEnd + value
+        );
+    }
+
     isNextCoordinate(otherCoordinate: LadderCoordinates): boolean {        
         return this.xInit == otherCoordinate.xEnd && (
             this.yInit == otherCoordinate.yEnd ||

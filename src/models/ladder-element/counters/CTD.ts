@@ -4,19 +4,19 @@ import Network from "../../network";
 import LadderCounter from "./ladder-counter";
 import LadderDimensions from "../ladder-dimensions";
 
-class CTU implements LadderCounter {
+class CTD implements LadderCounter {
     
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly dimensions: LadderDimensions = { height: 2, width: 1 };
     readonly hasNoActivationTime: boolean = false;
-    presetValue: number = 0;
     readonly resetSegmentCoordinates: LadderCoordinates;
 
     private _currentValue: number = 0;
     private _input: boolean = false;
     private _isActive: boolean = false;
     private _output: boolean = false;
-
+    private _presetValue: number = 0;
+    
     constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) {
         this.resetSegmentCoordinates = this.coordinates.incrementY(1);
     }
@@ -39,6 +39,15 @@ class CTU implements LadderCounter {
         return this._output;
     }
 
+    get presetValue(): number {
+        return this._presetValue;
+    }
+
+    set presetValue(value: number) {
+        this._presetValue = value;
+        this._currentValue = value;
+    }
+
     reset(): void {
         this.changes = { input: false, internalState: false, output: false };
         this._currentValue = 0;
@@ -50,8 +59,8 @@ class CTU implements LadderCounter {
     resetInput(value: boolean): void {
         if(!value) return;
 
-        this.changes.internalState = this.currentValue > 0
-        this._currentValue = 0;
+        this.changes.internalState = (this.currentValue != this.presetValue);
+        this._currentValue = this.presetValue;
 
         this.changes.output = this.output
         this._output = false;
@@ -60,7 +69,7 @@ class CTU implements LadderCounter {
     resolve(): void {
         if(this.isActive) return;
         
-        this._isActive = (this.currentValue >= this.presetValue);
+        this._isActive = (this.currentValue <= 0);
         this.changes.internalState = true;
         // If "isActive" and "output" are different, that means that, during this resolve,
         // the "isActive" changed, and then, the "output" will change too, because "output"
@@ -81,9 +90,9 @@ class CTU implements LadderCounter {
         this.changes.input = true;
 
         if(!this.input || this.isActive) return;
-        this._currentValue++;
+        this._currentValue--;
         this.changes.internalState = true;
     }
 }
 
-export default CTU
+export default CTD

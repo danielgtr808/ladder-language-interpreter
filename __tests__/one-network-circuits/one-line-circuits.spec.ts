@@ -7,6 +7,7 @@ import TOF from "./../../src/models/ladder-element/timers/TOF";
 import CTU from "./../../src/models/ladder-element/counters/CTU";
 import NcInput from "./../../src/models/ladder-element/inputs/nc-input";
 import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
+import CTD from "./../../src/models/ladder-element/counters/CTD";
 
 test("NoInput inactive, all lines should have negative input after resolve", () => {
     const simulation = new Simulation(0.5)
@@ -166,4 +167,60 @@ test("On reseting the CTU, the presetValue should go to zero", () => {
     simulation.resolve();
 
     expect(counterUp.currentValue).toBe(0);
+})
+
+test("On reseting the CTU, all the elements connected to it, should have negative input", () => {
+    const simulation = new Simulation(0.5);
+    const network = simulation.createNetwork();
+    const counterUp = network.createElement(CTU, new LadderCoordinates(0, 1, 0, 0));
+    const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+    counterUp.presetValue = 1;
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(counterUp.output).toBe(true);
+    expect(line.input).toBe(true);
+    expect(simpleOutput.input).toBe(true);
+
+    counterUp.resetInput(true);
+    simulation.resolve();
+
+    expect(counterUp.output).toBe(false)
+    expect(line.input).toBe(false);
+    expect(simpleOutput.input).toBe(false);
+})
+
+test("If CTD input is high, and presetValue is 1, CTD output should be high after first resolve", () => {
+    const simulation = new Simulation(0.5)
+    const network = simulation.createNetwork();
+    const counterDown = network.createElement(CTD, new LadderCoordinates(0, 1, 0, 0));
+    counterDown.presetValue = 1;
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(counterDown.output).toBe(true);
+    expect(counterDown.currentValue).toBe(0);
+});
+
+test("On reseting the CTD, the presetValue should go to zero", () => {
+    const simulation = new Simulation(0.5);
+    const network = simulation.createNetwork();
+    const ncInput = network.createElement(NcInput, new LadderCoordinates(0, 1, 0, 0));
+    const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 1, 1));
+    const counterDown = network.createElement(CTD, new LadderCoordinates(1, 2, 0, 0));
+    counterDown.presetValue = 10.
+
+    simulation.play();
+    simulation.resolve();
+
+    expect(counterDown.currentValue).toBe(9);
+
+    counterDown.setInput(true, noInput.coordinates.incrementX(1));
+
+    simulation.resolve();
+
+    expect(counterDown.currentValue).toBe(10);
 })

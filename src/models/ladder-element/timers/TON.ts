@@ -1,11 +1,13 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 import LadderTimer from "./ladder-timer";
 
 class TON implements LadderTimer {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     presetTime: number = 0;
     timeBaseInMS: number = 1;
@@ -28,14 +30,6 @@ class TON implements LadderTimer {
 
     get input(): boolean {
         return this._input;
-    }
-
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this.changes.input = true;
-        this._elapsedTime = 0;
-        this._input = value;
-        this._isCounting = value;
     }
 
     get isActive(): boolean {
@@ -76,6 +70,14 @@ class TON implements LadderTimer {
         // is a reflex of "isActive"
         this.changes.output = (this.output !== this.isActive);
         this._output = this._isActive;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this.changes.input = true;
+        this._elapsedTime = 0;
+        this._input = value;
+        this._isCounting = value;
     }
 
 }

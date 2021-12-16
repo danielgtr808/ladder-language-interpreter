@@ -1,15 +1,16 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
 class NcInput implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
-    isActive: boolean = false;
-
     private _input: boolean = false;
+    private _isActive: boolean = false;
     private _output: boolean = false;
 
     constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
@@ -18,10 +19,14 @@ class NcInput implements LadderElement {
         return this._input;
     }
 
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
+    get isActive(): boolean {
+        return this._isActive;
+    }
+
+    set isActive(value: boolean) {
+        if(this.isActive == value) return;
+        this._isActive = value;
+        this.changes.internalState = true;
     }
 
     get output(): boolean {
@@ -39,6 +44,12 @@ class NcInput implements LadderElement {
         if(this.output == (this.input && !this.isActive)) return;
         this._output = !this.output
         this.changes.output = true;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates): void {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
     }
 
 }

@@ -1,5 +1,6 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 import LadderTimer from "./ladder-timer";
 
@@ -9,6 +10,7 @@ class TOF implements LadderTimer {
     // output. The TOF starts with "output" setted to true, but, if it's not marked as
     // changed, then, it will not propagate.
     changes: LadderElementChanges = { input: false, internalState: false, output: true };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     presetTime: number = 0;
     timeBaseInMS: number = 1;
@@ -32,14 +34,6 @@ class TOF implements LadderTimer {
 
     get input(): boolean {
         return this._input;
-    }
-
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this.changes.input = true;
-        this._elapsedTime = 0;
-        this._input = value;
-        this._isCounting = value;
     }
 
     get isActive(): boolean {
@@ -82,6 +76,14 @@ class TOF implements LadderTimer {
         // of the isActive).
         this.changes.output = (this.output == this.isActive);
         this._output = !this._isActive;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this.changes.input = true;
+        this._elapsedTime = 0;
+        this._input = value;
+        this._isCounting = value;
     }
 
 }

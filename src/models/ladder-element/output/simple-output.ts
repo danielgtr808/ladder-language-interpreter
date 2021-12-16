@@ -1,11 +1,13 @@
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
+import LadderDimensions from "../ladder-dimensions";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
 class SimpleOutput implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
+    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     isActive: boolean = false;
 
@@ -16,12 +18,6 @@ class SimpleOutput implements LadderElement {
 
     get input(): boolean {
         return this._input;
-    }
-
-    set input(value: boolean) {
-        if(this.input == value) return;
-        this._input = value;
-        this.changes.input = true;
     }
 
     get output(): boolean {
@@ -39,6 +35,12 @@ class SimpleOutput implements LadderElement {
         if(this.input == this.output) return;
         this._output = this.input
         this.changes.output = true;
+    }
+
+    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(this.input == value) return;
+        this._input = value;
+        this.changes.input = true;
     }
 
 }

@@ -4,10 +4,16 @@ import LadderElementChanges from "./ladder-element/ladder-element-changes";
 import LadderElementConstructor from "./ladder-element/ladder-element-constructor";
 import Simulation from "./simulation";
 
+type CoordinateInUse = {
+    coordinates: LadderCoordinates,
+    element: LadderElement
+}
+
 class Network {
 
     elements: LadderElement[] = [];
     
+    private _coordinatesInUse: CoordinateInUse[] = []
     private _nextElementId: number = 0;
 
     constructor(public readonly networkId: number, public readonly simulation: Simulation) { }
@@ -27,12 +33,28 @@ class Network {
         const newElement = new elementConstructor(coordinates, this._nextElementId, this);
         this._nextElementId++;
 
-        const elementToReplace = this.getElementByCoordinates(coordinates);
-        if(elementToReplace) {
-            this.elements.splice(
-                this.elements.findIndex(x => x == elementToReplace),
-                1
-            )
+        for(let y = 0; y < newElement.dimensions.height; y++) {
+            for(let x = 0; x < newElement.dimensions.width; x++) {
+                const calculatedCoordinates: LadderCoordinates = new LadderCoordinates(
+                    coordinates.xInit + x,
+                    coordinates.xEnd + x,
+                    coordinates.yInit + y,
+                    coordinates.yEnd + y
+                );
+                const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
+
+                if(!elementToReplace) {
+                    this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
+                    continue;
+                };
+
+                this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
+                // The "!" after the find function means that, it's guaranteed that the
+                // object will be founded. Thats because, the same function that create
+                // the elements (this function) also pushes then into usable coordinates
+                // array, so, it's guaranted that they will be founded. 
+                this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
+            }
         }
 
         this.elements.push(newElement)
@@ -40,39 +62,30 @@ class Network {
     }
 
     getElementByCoordinates(coordinates: LadderCoordinates): LadderElement | undefined {
-        return this.elements.find(x => 
-            x.coordinates.xEnd == coordinates.xEnd &&
-            x.coordinates.xInit == coordinates.xInit &&
-            x.coordinates.yEnd == coordinates.yEnd &&
-            x.coordinates.yInit == coordinates.yInit
-        );
+        return this._coordinatesInUse.find(x => x.coordinates.areEqual(coordinates))?.element;
     }
 
     getNextElements(referenceElement: LadderElement): LadderElement[] {
-        return this.elements.filter(x => {
-            return referenceElement.coordinates.xEnd == x.coordinates.xInit && (
-                referenceElement.coordinates.yEnd == x.coordinates.yInit ||
-                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
-                referenceElement.coordinates.yInit == x.coordinates.yInit
+        return this._coordinatesInUse
+            .filter(x => 
+                x.coordinates.isNextCoordinate(referenceElement.coordinates)
+            ).map(
+                x => x.element
             );
-        });
     }
 
     getPreviousElements(referenceElement: LadderElement): LadderElement[] {
-        return this.elements.filter(x => {
-            return referenceElement.coordinates.xInit == x.coordinates.xEnd && (
-                referenceElement.coordinates.yInit == x.coordinates.yInit ||
-                referenceElement.coordinates.yInit == x.coordinates.yEnd ||
-                referenceElement.coordinates.yEnd == x.coordinates.yInit
-                // the algorithm will take the reference element along with the
-                // others, so, another condition is attached to prevent this.
-            ) && referenceElement !== x ;
-        });
+        return this.elements.filter(x => 
+            x.coordinates.isPreviousCoordinate(referenceElement.coordinates)
+            // the algorithm will take the reference element along with the
+            // others, so, another condition is attached to prevent this.
+            && referenceElement !== x
+        );
     }
 
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
-            x.input = true;
+            x.setInput(true, x.coordinates.incrementX(1));
         });
         this.firstResolve();
     }
@@ -91,8 +104,8 @@ class Network {
             if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
-                x.input = this.calculateElementInput(x);
-                if(x.changes && x.hasNoActivationTime) {
+                x.setInput(this.calculateElementInput(x), actualElement.coordinates.incrementX(1));
+                if(this.hasElementchanged(x.changes) && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
             })
@@ -118,7 +131,7 @@ class Network {
             if(actualElement.hasNoActivationTime) actualElement.resolve();
             
             this.getNextElements(actualElement).forEach(x => {
-                x.input = this.calculateElementInput(x);
+                x.setInput(this.calculateElementInput(x), x.coordinates.incrementX(1));
                 if(x.changes && x.hasNoActivationTime) {
                     initialElements.push(x);
                 }

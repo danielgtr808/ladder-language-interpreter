@@ -161,7 +161,9 @@ test("On reseting the CTU, the presetValue should go to zero", () => {
 
     expect(counterUp.currentValue).toBe(1);
 
-    counterUp.setInput(true, noInput.coordinates)
+    counterUp.setInput(true, noInput.coordinates.incrementX(1));
+
+    simulation.resolve();
 
     expect(counterUp.currentValue).toBe(0);
 })

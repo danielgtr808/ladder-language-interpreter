@@ -10,13 +10,21 @@ class CTU implements LadderCounter {
     readonly dimensions: LadderDimensions = { height: 2, width: 1 };
     readonly hasNoActivationTime: boolean = false;
     presetValue: number = 0;
+    readonly resetSegmentCoordinates: LadderCoordinates;
 
     private _currentValue: number = 0;
     private _input: boolean = false;
     private _isActive: boolean = false;
     private _output: boolean = false;
 
-    constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
+    constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) {
+        this.resetSegmentCoordinates = new LadderCoordinates(
+            this.coordinates.xInit,
+            this.coordinates.xEnd,
+            this.coordinates.yInit + 1,
+            this.coordinates.yEnd + 1
+        )
+    }
 
     get currentValue(): number {
         return this._currentValue;
@@ -44,7 +52,9 @@ class CTU implements LadderCounter {
         this._output = false;
     }
 
-    resetTimer(): void {
+    resetInput(value: boolean): void {
+        if(!value) return;
+
         this.changes.internalState = this.currentValue > 0
         this._currentValue = 0;
 
@@ -66,6 +76,11 @@ class CTU implements LadderCounter {
 
 
     setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
+        if(segmentCoordinates.areEqual(this.resetSegmentCoordinates)) {
+            this.resetInput(value)
+            return;
+        }
+
         if(this.input == value) return;
         this._input = value;
         this.changes.input = true;

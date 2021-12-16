@@ -13,6 +13,15 @@ class LadderCoordinates {
             this.yEnd == otherCoordinate.yEnd
     }
 
+    incrementX(value: number): LadderCoordinates {
+        return new LadderCoordinates(
+            this.xInit + value,
+            this.xEnd + value,
+            this.yInit,
+            this.yEnd
+        );
+    }
+
     isNextCoordinate(otherCoordinate: LadderCoordinates): boolean {        
         return this.xInit == otherCoordinate.xEnd && (
             this.yInit == otherCoordinate.yEnd ||

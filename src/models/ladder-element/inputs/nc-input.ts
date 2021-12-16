@@ -9,15 +9,24 @@ class NcInput implements LadderElement {
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
-    isActive: boolean = false;
-
     private _input: boolean = false;
+    private _isActive: boolean = false;
     private _output: boolean = false;
 
     constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
 
     get input(): boolean {
         return this._input;
+    }
+
+    get isActive(): boolean {
+        return this._isActive;
+    }
+
+    set isActive(value: boolean) {
+        if(this.isActive == value) return;
+        this._isActive = value;
+        this.changes.internalState = true;
     }
 
     get output(): boolean {

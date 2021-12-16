@@ -66,7 +66,12 @@ class Network {
     }
 
     getNextElements(referenceElement: LadderElement): LadderElement[] {
-        return this.elements.filter(x => x.coordinates.isNextCoordinate(referenceElement.coordinates));
+        return this._coordinatesInUse
+            .filter(x => 
+                x.coordinates.isNextCoordinate(referenceElement.coordinates)
+            ).map(
+                x => x.element
+            );
     }
 
     getPreviousElements(referenceElement: LadderElement): LadderElement[] {
@@ -99,8 +104,8 @@ class Network {
             if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
-                x.setInput(this.calculateElementInput(x), x.coordinates.incrementX(1));
-                if(x.changes && x.hasNoActivationTime) {
+                x.setInput(this.calculateElementInput(x), actualElement.coordinates.incrementX(1));
+                if(this.hasElementchanged(x.changes) && x.hasNoActivationTime) {
                     elementsThatChanged.push(x);
                 }
             })

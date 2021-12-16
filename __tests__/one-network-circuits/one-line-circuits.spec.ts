@@ -136,3 +136,12 @@ test("If CTU input is high, and presetValue is 1, CTU output should be high afte
     expect(counterUp.output).toBe(true);
     expect(counterUp.currentValue).toBe(1);
 });
+
+test("On creating CTU, should ocupy two coordinates on the network", () => {
+    const simulation = new Simulation(0.5);
+    const network = simulation.createNetwork();
+    const counterUp = network.createElement(CTU, { xInit: 0, xEnd: 1, yInit: 0, yEnd: 0 });
+
+    expect(network.getElementByCoordinates({ xInit: 0, xEnd: 1, yInit: 1, yEnd: 1 })).toEqual(counterUp);
+    expect(network.getElementByCoordinates({ xInit: 0, xEnd: 1, yInit: 1, yEnd: 1 })).toBeDefined();
+})

@@ -1,3 +1,4 @@
+import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderDimensions from "../ladder-dimensions";
@@ -19,14 +20,20 @@ class TOF implements LadderTimer {
     private _input: boolean = false;
     private _output: boolean = true;
     private _isActive: boolean = false;
-    private _isCounting: boolean = false;
-  
+    private _isCounting: boolean = false;  
   
     constructor(
+        private _bitAddress: BitAddress,
         public coordinates: LadderCoordinates,
         public readonly id: number,
         public readonly network: Network
     ) { }
+
+    get address(): string {
+        return "";
+    }
+    
+    set address(value: string) { }
 
     get elapsedTime(): number {
         return this._elapsedTime;

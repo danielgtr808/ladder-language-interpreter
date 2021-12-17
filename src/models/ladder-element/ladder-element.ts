@@ -4,6 +4,7 @@ import LadderDimensions from "./ladder-dimensions";
 import LadderElementChanges from "./ladder-element-changes";
 
 interface LadderElement {
+    address: string;
     changes: LadderElementChanges;
     coordinates: LadderCoordinates;
     readonly dimensions: LadderDimensions;

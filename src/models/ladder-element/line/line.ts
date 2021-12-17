@@ -1,3 +1,4 @@
+import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderDimensions from "../ladder-dimensions";
@@ -14,7 +15,18 @@ class Line implements LadderElement {
     private _input: boolean = false;
     private _output: boolean = false;
 
-    constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) { }
+    constructor(
+        private _bitAddress: BitAddress,
+        public readonly coordinates: LadderCoordinates,
+        public readonly id: number,
+        public readonly network: Network
+    ) { }
+
+    get address(): string { 
+        return "";
+    }
+    
+    set address(value: string) {}
 
 
     get input(): boolean {

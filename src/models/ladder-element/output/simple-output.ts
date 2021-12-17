@@ -62,12 +62,13 @@ class SimpleOutput implements LadderElement {
     resolve(): void {
         if(this.input == this.output) return;
         this._output = this.input
-        this.changes.output = true;
+        this.changes.output = true;        
+        this._bitAddress.state = this.input;
     }
 
     setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
         if(this.input == value) return;
-        this._input = value;
+        this._input = value;        
         this.changes.input = true;
     }
 

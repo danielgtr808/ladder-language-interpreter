@@ -2,6 +2,8 @@ import LadderCoordinates from "./ladder-element/ladder-coordinates";
 import LadderElement from "./ladder-element/ladder-element";
 import LadderElementChanges from "./ladder-element/ladder-element-changes";
 import LadderElementConstructor from "./ladder-element/ladder-element-constructor";
+import BitAddress from "./memory-manager/bit-address";
+import MemoryManager from "./memory-manager/memory-manager";
 import Simulation from "./simulation";
 
 type CoordinateInUse = {
@@ -16,7 +18,11 @@ class Network {
     private _coordinatesInUse: CoordinateInUse[] = []
     private _nextElementId: number = 0;
 
-    constructor(public readonly networkId: number, public readonly simulation: Simulation) { }
+    constructor(
+        public readonly networkId: number,
+        public readonly memoryManager: MemoryManager,
+        public readonly simulation: Simulation
+    ) { }
 
     calculateElementInput(element: LadderElement): boolean {
         if(element.coordinates.xInit == 0) return true;
@@ -30,7 +36,7 @@ class Network {
     }
 
     createElement<T extends LadderElement>(elementConstructor: LadderElementConstructor<T>, coordinates: LadderCoordinates): T {
-        const newElement = new elementConstructor(coordinates, this._nextElementId, this);
+        const newElement = new elementConstructor(this.getBitAddress(""), coordinates, this._nextElementId, this);
         this._nextElementId++;
 
         for(let y = 0; y < newElement.dimensions.height; y++) {
@@ -61,6 +67,10 @@ class Network {
         return newElement;
     }
 
+    getBitAddress(address: string): BitAddress {
+        return this.memoryManager.findOrCreateBitAddress(address);
+    }
+
     getElementByCoordinates(coordinates: LadderCoordinates): LadderElement | undefined {
         return this._coordinatesInUse.find(x => x.coordinates.areEqual(coordinates))?.element;
     }
@@ -85,7 +95,7 @@ class Network {
 
     play() {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
-            x.setInput(true, x.coordinates.incrementX(1));
+            x.setInput(true, x.coordinates);
         });
         this.firstResolve();
     }

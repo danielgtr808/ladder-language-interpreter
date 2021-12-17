@@ -3,6 +3,7 @@ import LadderElementChanges from "../ladder-element-changes";
 import Network from "../../network";
 import LadderCounter from "./ladder-counter";
 import LadderDimensions from "../ladder-dimensions";
+import BitAddress from "../../memory-manager/bit-address";
 
 class CTU implements LadderCounter {
     
@@ -17,9 +18,20 @@ class CTU implements LadderCounter {
     private _isActive: boolean = false;
     private _output: boolean = false;
 
-    constructor(public readonly coordinates: LadderCoordinates, public readonly id: number, public readonly network: Network) {
+    constructor(
+        private _bitAddress: BitAddress,
+        public readonly coordinates: LadderCoordinates,
+        public readonly id: number,
+        public readonly network: Network
+    ) {
         this.resetSegmentCoordinates = this.coordinates.incrementY(1);
     }
+
+    get address(): string {
+        return "";
+    }
+    
+    set address(value: string) { }
 
     get currentValue(): number {
         return this._currentValue;

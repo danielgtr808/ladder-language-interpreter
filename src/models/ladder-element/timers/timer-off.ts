@@ -4,7 +4,7 @@ import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 import LadderTimer from "./ladder-timer";
 
-class timerOff extends LadderTimer implements LadderElement {
+class TimerOff extends LadderTimer implements LadderElement {
   
     constructor(
         private _bitAddress: BitAddress,
@@ -33,4 +33,4 @@ class timerOff extends LadderTimer implements LadderElement {
 
 }
 
-export default timerOff
+export default TimerOff

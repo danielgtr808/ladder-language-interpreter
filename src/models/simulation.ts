@@ -36,6 +36,7 @@ class Simulation {
 
     stop() {
         this.networks.forEach(x => x.stop());
+        this._timeInMS = 0;
     }
 
 }

@@ -4,7 +4,7 @@ import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
-class SimpleOutput implements LadderElement {
+class Coil implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly hasNoActivationTime: boolean = false;
@@ -78,4 +78,4 @@ class SimpleOutput implements LadderElement {
 
 }
 
-export default SimpleOutput
+export default Coil

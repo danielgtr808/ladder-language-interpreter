@@ -2,7 +2,6 @@ import Coil from "./../../src/models/ladder-element/output/coil";
 import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
 import Line from "./../../src/models/ladder-element/line/line";
 import Network from "../../src/models/network";
-import NcInput from "./../../src/models/ladder-element/inputs/nc-input";
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
 import Simulation from "./../../src/models/simulation";
 import TimerOff from "../../src/models/ladder-element/timers/timer-off";
@@ -79,12 +78,6 @@ describe("play", () => {
     });
 });
 
-// (resolve) Check if the method "resolve" is called in all networks.
-// (resolve) Check if simulation time is incremented
-// (resolve) Check if the simulation is returning the correct changes.
-// (stop) Check if the "stop" method is called in all networks
-// (stop) Check if the simulation time is set to zero
-
 describe("resolve", () => {
     let simulation: Simulation;
     let firstNetwork: Network;
@@ -107,5 +100,56 @@ describe("resolve", () => {
 
         expect(mockResolveFirstNetwork.mock.calls.length).toBe(1);
         expect(mockResolveSecondNetwork.mock.calls.length).toBe(1);
+    });
+
+    test("Check if simulation time is being increment after each method call", () => {
+        expect(simulation.timeInMS).toBe(0);
+
+        simulation.resolve();
+
+        expect(simulation.timeInMS).toBe(simulation.timeStepInMS);
+
+        simulation.resolve();
+
+        expect(simulation.timeInMS).toBe(simulation.timeStepInMS*2);
+    });
+    
+    // (resolve) Check if the simulation is returning the correct changes.
+});
+
+describe("stop", () => {
+    let simulation: Simulation;
+    let firstNetwork: Network;
+    let secondNetwork: Network;
+
+    beforeEach(() => {
+        simulation = new Simulation();
+        firstNetwork = simulation.createNetwork();
+        secondNetwork = simulation.createNetwork();
+    })
+
+    test("Check if the method 'stop' is called for all networks", () => {
+        const mockStopFirstNetwork = jest.fn(() => []);
+        firstNetwork.stop = mockStopFirstNetwork;
+
+        const mockStopSecondNetwork = jest.fn(() => []);
+        secondNetwork.stop = mockStopSecondNetwork;
+
+        simulation.stop();
+
+        expect(mockStopFirstNetwork.mock.calls.length).toBe(1);
+        expect(mockStopSecondNetwork.mock.calls.length).toBe(1);
+    });
+
+    test("Check if simulation time is setted to 0 after stop", () => {
+        expect(simulation.timeInMS).toBe(0);
+
+        simulation.resolve();
+
+        expect(simulation.timeInMS).toBe(simulation.timeStepInMS);
+        
+        simulation.stop();
+
+        expect(simulation.timeInMS).toBe(0);
     });
 });

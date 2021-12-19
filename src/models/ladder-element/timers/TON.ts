@@ -1,69 +1,18 @@
 import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
-import LadderElementChanges from "../ladder-element-changes";
+import LadderElement from "../ladder-element";
 import LadderTimer from "./ladder-timer";
 
-class TON implements LadderTimer {
-
-    changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
-    readonly hasNoActivationTime: boolean = false;
-    presetTime: number = 0;
-    timeBaseInMS: number = 1;
-
-    private _elapsedTime: number = 0;
-    private _input: boolean = false;
-    private _output: boolean = false;
-    private _isActive: boolean = false;
-    private _isCounting: boolean = false;
+class TON extends LadderTimer implements LadderElement {
   
     constructor(
         private _bitAddress: BitAddress,
         public coordinates: LadderCoordinates,
         public readonly id: number,
         public readonly network: Network
-    ) { }
-
-    get address(): string {
-        return "";
-    }
-    
-    set address(value: string) { }
-
-    get elapsedTime(): number {
-        return this._elapsedTime;
-    }
-
-    get input(): boolean {
-        return this._input;
-    }
-
-    get isActive(): boolean {
-        return this._isActive;
-    }
-
-    set isActive(value: boolean) { }
-
-    get isCounting(): boolean {
-        return this._isCounting;
-    }
-
-    get output(): boolean {
-        return this._output;
-    }
-
-    get time(): number {
-        return this.presetTime*this.timeBaseInMS;
-    }
-
-    reset(): void {
-        this.changes = { input: false, internalState: false, output: false };
-        this._elapsedTime = 0;
-        this._isActive = false;
-        this._input = false;
-        this._output = false;
+    ) {
+        super(false);
     }
 
     resolve(): void {
@@ -78,14 +27,6 @@ class TON implements LadderTimer {
         // is a reflex of "isActive"
         this.changes.output = (this.output !== this.isActive);
         this._output = this._isActive;
-    }
-
-    setInput(value: boolean, segmentCoordinates: LadderCoordinates) {
-        if(this.input == value) return;
-        this.changes.input = true;
-        this._elapsedTime = 0;
-        this._input = value;
-        this._isCounting = value;
     }
 
 }

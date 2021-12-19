@@ -16,10 +16,10 @@ class Network {
     elements: LadderElement[] = [];
     
     private _coordinatesInUse: CoordinateInUse[] = []
-    private _nextElementId: number = 0;
+    private _nextElementId: number = 1;
 
     constructor(
-        public readonly networkId: number,
+        public readonly id: number,
         public readonly memoryManager: MemoryManager,
         public readonly simulation: Simulation
     ) { }
@@ -86,11 +86,13 @@ class Network {
         );
     }
 
-    play() {
+    play(): LadderElement[] {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
             x.setInput(true, x.coordinates);
         });
         this.firstResolve();
+
+        return this.elements.filter(x => this.hasElementchanged(x.changes));
     }
 
     resolve(): LadderElement[] {
@@ -101,9 +103,6 @@ class Network {
             actualElement.changes.internalState = false;
             actualElement.resolve();
 
-            // A resolve calculates the new output of the element based on the input acquired
-            // on the last resolve loop, so, the "changed" setted to false, can turn into true
-            // gain, if the output changes.
             if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
@@ -140,8 +139,6 @@ class Network {
                 }
             })
         }
-
-        return initialElements;
     }
 
 

@@ -1,12 +1,13 @@
 import MemoryManager from "./memory-manager/memory-manager";
 import Network from "./network";
+import NetworkChanges from "./network-changes";
 
 class Simulation {
 
     networks: Network[] = [];
     memoryManager: MemoryManager;
 
-    private _nextNetworkId: number = 0;
+    private _nextNetworkId: number = 1;
     private _timeInMS: number = 0;
 
     constructor(public readonly timeStepInMS: number = 0.5) {
@@ -25,8 +26,20 @@ class Simulation {
         return newNetwork;
     }
 
-    play() {
-        this.networks.forEach(x => x.play());
+    play(): NetworkChanges[] {
+        let networkChanges: NetworkChanges[] = []
+        this.networks.forEach(x => {
+            const playReturn = x.play();
+
+            if(playReturn.length > 0) {
+                networkChanges.push({
+                    networkId: x.id,
+                    changedElements: playReturn
+                });
+            }
+        });
+
+        return networkChanges;
     }
 
     resolve() {

@@ -66,17 +66,16 @@ describe("play", () => {
     });
 
     test("Check if the method is returning the correct changes", () => {
-        const TOF = firstNetwork.createElement(TimerOff, new LadderCoordinates(1, 2, 0, 0));
+        firstNetwork.createElement(TimerOff, new LadderCoordinates(1, 2, 0, 0));
         const line = firstNetwork.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
         const coil = firstNetwork.createElement(Coil, new LadderCoordinates(3, 4, 0, 0));
 
         const playReturn = simulation.play();
         expect(playReturn.length).toBe(1);
         expect(playReturn[0].networkId).toBe(1)
-        expect(playReturn[0].changedElements.length).toBe(3);
-        expect(playReturn[0].changedElements[0]).toBe(TOF);
-        expect(playReturn[0].changedElements[1]).toBe(line);
-        expect(playReturn[0].changedElements[2]).toBe(coil);
+        expect(playReturn[0].changedElements.length).toBe(2);
+        expect(playReturn[0].changedElements[0]).toBe(line);
+        expect(playReturn[0].changedElements[1]).toBe(coil);
     });
 });
 

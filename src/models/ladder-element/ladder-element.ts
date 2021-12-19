@@ -1,14 +1,13 @@
 import Network from "../network";
 import LadderCoordinates from "./ladder-coordinates";
-import LadderDimensions from "./ladder-dimensions";
 import LadderElementChanges from "./ladder-element-changes";
 
 interface LadderElement {
     address: string;
     changes: LadderElementChanges;
     coordinates: LadderCoordinates;
-    readonly dimensions: LadderDimensions;
     readonly hasNoActivationTime: boolean
+    readonly height: number;
     readonly id: number;
     readonly input: boolean;
     isActive: boolean;

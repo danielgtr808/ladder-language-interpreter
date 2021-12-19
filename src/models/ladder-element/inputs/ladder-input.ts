@@ -1,14 +1,13 @@
 import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 
 abstract class LadderInput {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
+    readonly height: number = 1;
 
     protected _input: boolean = false;
     protected _isActive: boolean = false;

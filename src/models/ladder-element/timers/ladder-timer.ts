@@ -1,12 +1,11 @@
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 
 abstract class LadderTimer {
 
     changes: LadderElementChanges;
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
+    readonly height: number = 1;
     presetTime: number = 0;
     timeBaseInMS: number = 1;
 

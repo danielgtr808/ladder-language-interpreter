@@ -39,28 +39,21 @@ class Network {
         const newElement = new elementConstructor(this.getBitAddress(""), coordinates, this._nextElementId, this);
         this._nextElementId++;
 
-        for(let y = 0; y < newElement.dimensions.height; y++) {
-            for(let x = 0; x < newElement.dimensions.width; x++) {
-                const calculatedCoordinates: LadderCoordinates = new LadderCoordinates(
-                    coordinates.xInit + x,
-                    coordinates.xEnd + x,
-                    coordinates.yInit + y,
-                    coordinates.yEnd + y
-                );
-                const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
+        for(let y = 0; y < newElement.height; y++) {
+            const calculatedCoordinates = coordinates.incrementY(y);
+            const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
 
-                if(!elementToReplace) {
-                    this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
-                    continue;
-                };
+            if(!elementToReplace) {
+                this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
+                continue;
+            };
 
-                this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
-                // The "!" after the find function means that, it's guaranteed that the
-                // object will be founded. Thats because, the same function that create
-                // the elements (this function) also pushes then into usable coordinates
-                // array, so, it's guaranted that they will be founded. 
-                this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
-            }
+            this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
+            // The "!" after the find function means that, it's guaranteed that the
+            // object will be founded. Thats because, the same function that create
+            // the elements (this function) also pushes then into usable coordinates
+            // array, so, it's guaranted that they will be founded. 
+            this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
         }
 
         this.elements.push(newElement)

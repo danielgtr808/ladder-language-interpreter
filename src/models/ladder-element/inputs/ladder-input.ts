@@ -3,7 +3,7 @@ import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
 import LadderElementChanges from "../ladder-element-changes";
 
-abstract class LadderInput {
+class LadderInput {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
     readonly hasNoActivationTime: boolean = false;

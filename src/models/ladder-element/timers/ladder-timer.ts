@@ -1,7 +1,7 @@
 import LadderCoordinates from "../ladder-coordinates";
 import LadderElementChanges from "../ladder-element-changes";
 
-abstract class LadderTimer {
+class LadderTimer {
 
     changes: LadderElementChanges;
     readonly hasNoActivationTime: boolean = false;

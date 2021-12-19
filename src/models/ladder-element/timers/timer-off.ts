@@ -4,7 +4,7 @@ import LadderCoordinates from "../ladder-coordinates";
 import LadderElement from "../ladder-element";
 import LadderTimer from "./ladder-timer";
 
-class TON extends LadderTimer implements LadderElement {
+class timerOff extends LadderTimer implements LadderElement {
   
     constructor(
         private _bitAddress: BitAddress,
@@ -12,7 +12,7 @@ class TON extends LadderTimer implements LadderElement {
         public readonly id: number,
         public readonly network: Network
     ) {
-        super(false);
+        super(true);
     }
 
     resolve(): void {
@@ -22,13 +22,15 @@ class TON extends LadderTimer implements LadderElement {
         this.changes.internalState = true;
         
         this._isActive = (this._elapsedTime >= this.time);
-        // If "isActive" and "output" are different, that means that, during this resolve,
-        // the "isActive" changed, and then, the "output" will change too, because "output"
-        // is a reflex of "isActive"
-        this.changes.output = (this.output !== this.isActive);
-        this._output = this._isActive;
-    }
+        // Output is always true, unless the isActive is true, thats why, they will
+        // always be different (changes.output always false), unless the elapsedTime
+        // is equal to the timer time, then, the isActive will be true, equal to the
+        // output, and then, the output will, indeed, change (output is the negated
+        // of the isActive).
+        this.changes.output = (this.output == this.isActive);
+        this._output = !this._isActive;
+    }  
 
 }
 
-export default TON
+export default timerOff

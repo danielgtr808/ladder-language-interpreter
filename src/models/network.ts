@@ -41,19 +41,14 @@ class Network {
 
         for(let y = 0; y < newElement.height; y++) {
             const calculatedCoordinates = coordinates.incrementY(y);
-            const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
+            const elementToDelete = this.getElementByCoordinates(calculatedCoordinates);
 
-            if(!elementToReplace) {
-                this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
-                continue;
-            };
+            if(elementToDelete) this.deleteElement(elementToDelete);
 
-            this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
-            // The "!" after the find function means that, it's guaranteed that the
-            // object will be founded. Thats because, the same function that create
-            // the elements (this function) also pushes then into usable coordinates
-            // array, so, it's guaranted that they will be founded. 
-            this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
+            this._coordinatesInUse.push({
+                coordinates: calculatedCoordinates,
+                element: newElement
+            });
         }
 
         this.elements.push(newElement)
@@ -71,7 +66,7 @@ class Network {
     getNextElements(referenceElement: LadderElement): LadderElement[] {
         return this._coordinatesInUse
             .filter(x => 
-                x.coordinates.isNextCoordinate(referenceElement.coordinates)
+                x.coordinates.isNextCoordinate(referenceElement.coordinates) && x.element !== referenceElement
             ).map(
                 x => x.element
             );
@@ -122,6 +117,22 @@ class Network {
         this.elements.forEach(x => x.reset());
     }
 
+    private deleteElement(elementToDelete: LadderElement) {
+        this.elements.splice(this.elements.findIndex(x => x == elementToDelete), 1);
+
+        let quantityReplaced: number = 0;
+        for(let i = 0; i < this._coordinatesInUse.length; i++) {
+            const actualElement = this._coordinatesInUse[i];
+            if(actualElement.element != elementToDelete) continue;
+
+            this._coordinatesInUse.splice(this._coordinatesInUse.findIndex(x => x.element == elementToDelete ))
+            i--
+
+            quantityReplaced++;
+            if(quantityReplaced == elementToDelete.height) break;
+        }
+    }
+
     private firstResolve() {
         // The first resolve is distinct from the others, because, in this case,
         // it's used only to propagate the state from the elements that start with
@@ -140,7 +151,6 @@ class Network {
             })
         }
     }
-
 
     private hasElementchanged(changesObject: LadderElementChanges): boolean {
         for (let value of Object.values(changesObject)) {

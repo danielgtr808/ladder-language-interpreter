@@ -246,11 +246,126 @@ describe("play", () => {
 
         expect(firstLine.input).toBe(true);
         expect(secondLine.input).toBe(true);
-    })
+    });
+
+    // (play -add layer) check if lines from x0 propagates to other lines.
 });
 
-// (play -add layer) check if lines from x0 propagates to other lines.
-// (resolve) check if all elements with changed have the "resolve" method called.
-// (resolve) check if chaining of elements occour (if the elements connected to a changed output are called)
-// (resolve) check if all changed elements are returned;
-// (stop) check if all elements have the "reset" function called
+describe("resolve", () => {
+    let simulation: Simulation;
+    let network: Network;
+
+    beforeEach(() => {
+        simulation = new Simulation();
+        network = simulation.createNetwork();
+    });
+
+    test("All elements considered changed must have the method 'resolve' called.", () => {
+        const changedElement = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+        changedElement.changes.input = true;
+        const resolveMockChangedElement = jest.fn(() => { });
+        changedElement.resolve = resolveMockChangedElement;
+
+        const secondChangedElement = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        secondChangedElement.changes.input = true;
+        const resolveMockSecondChangedElement = jest.fn(() => { });
+        secondChangedElement.resolve = resolveMockSecondChangedElement;
+
+        const elementNotChanged = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+        const resolveMockElementNotChanged = jest.fn(() => { });
+        elementNotChanged.resolve = resolveMockElementNotChanged;
+
+        network.resolve();
+
+        expect(resolveMockChangedElement.mock.calls.length).toBe(1);
+        expect(resolveMockSecondChangedElement.mock.calls.length).toBe(1);
+        expect(resolveMockElementNotChanged.mock.calls.length).toBe(0);
+    });
+
+    test("Check if the signal is propagated to connected elements", () => { 
+        const firstLine = network.createElement(Line, new LadderCoordinates(0, 1, 0, 0));
+        firstLine.setInput(true, firstLine.coordinates);
+        const secondLine = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+        const thirdLine = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        const fourthLine = network.createElement(Line, new LadderCoordinates(3, 4, 0, 0));
+
+        network.resolve();
+
+        expect(secondLine.input).toBe(true);
+        expect(thirdLine.input).toBe(true);
+        expect(fourthLine.input).toBe(true);
+    });
+
+    test("Check if the signal is only propagate from left to right", () => {
+        const firstLine = network.createElement(Line, new LadderCoordinates(0, 1, 0, 0));
+        firstLine.setInput(true, firstLine.coordinates);
+        const secondLine = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+        const thirdLine = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        const fourthLine = network.createElement(Line, new LadderCoordinates(3, 4, 0, 0));
+        const verticalLine = network.createElement(Line, new LadderCoordinates(4, 4, 0, 1));
+        const fifithLine = network.createElement(Line, new LadderCoordinates(4, 5, 1, 1));
+        const parallelFourthLine = network.createElement(Line, new LadderCoordinates(3, 4, 1, 1));
+        const parallelThirdLine = network.createElement(Line, new LadderCoordinates(2, 3, 1, 1));
+        const parallelSecondLine = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+
+        network.resolve();
+
+        expect(secondLine.input).toBe(true);
+        expect(thirdLine.input).toBe(true);
+        expect(fourthLine.input).toBe(true);
+        expect(verticalLine.input).toBe(true);
+        expect(fifithLine.input).toBe(true);
+        
+        expect(parallelSecondLine.input).toBe(false);
+        expect(parallelThirdLine.input).toBe(false);
+        expect(parallelFourthLine.input).toBe(false);        
+    });
+
+    test("Check if the method is returning all the changed elements", () => {
+        const firstLine = network.createElement(Line, new LadderCoordinates(0, 1, 0, 0));
+        firstLine.setInput(true, firstLine.coordinates);
+        const secondLine = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+        const thirdLine = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        const fourthLine = network.createElement(Line, new LadderCoordinates(3, 4, 0, 0));
+        const verticalLine = network.createElement(Line, new LadderCoordinates(4, 4, 0, 1));
+        const fifithLine = network.createElement(Line, new LadderCoordinates(4, 5, 1, 1));
+        const parallelFourthLine = network.createElement(Line, new LadderCoordinates(3, 4, 1, 1));
+        const parallelThirdLine = network.createElement(Line, new LadderCoordinates(2, 3, 1, 1));
+        const parallelSecondLine = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+
+        const changedElements = network.resolve();
+
+        expect(changedElements.length).toBe(6);
+        expect(changedElements.includes(firstLine)).toBe(true);
+        expect(changedElements.includes(secondLine)).toBe(true);
+        expect(changedElements.includes(thirdLine)).toBe(true);
+        expect(changedElements.includes(fourthLine)).toBe(true);
+        expect(changedElements.includes(verticalLine)).toBe(true);
+        expect(changedElements.includes(fifithLine)).toBe(true);      
+    });
+});
+
+describe("stop", () => {
+    test("Check if all elements have the 'reset' function called", () => {
+        const simulation = new Simulation();
+        const network = simulation.createNetwork();
+
+        const firstElement = network.createElement(Line, new LadderCoordinates(0, 1, 0, 0));
+        const resetMockFirstElement = jest.fn(() => { });
+        firstElement.reset = resetMockFirstElement;
+
+        const secondElement = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
+        const resetMockSecondElement = jest.fn(() => { });
+        secondElement.reset = resetMockSecondElement;
+
+        const thirdElement = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        const resetMockThidElement = jest.fn(() => { });
+        thirdElement.reset = resetMockThidElement;
+
+        network.stop();
+
+        expect(resetMockFirstElement.mock.calls.length).toBe(1);
+        expect(resetMockSecondElement.mock.calls.length).toBe(1);
+        expect(resetMockThidElement.mock.calls.length).toBe(1);
+    });
+});

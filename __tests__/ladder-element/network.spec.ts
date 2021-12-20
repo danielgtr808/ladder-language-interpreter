@@ -138,20 +138,80 @@ describe("getNextElements", () => {
         network = simulation.createNetwork();
     });
 
-    test("Check next element for vertical line", () => {
+    test("Check next element for vertical element", () => {
         const topVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 0, 1));
-        const topHorizontalLine = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+        const backTopHorizontalLine = network.createElement(Line, new LadderCoordinates(0, 1, 1, 1));
+        const frontTopHorizontalLine = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
         const verticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 1, 2));
-        const bottomHorizontalLine = network.createElement(Line, new LadderCoordinates(1, 2, 2, 2));
+        const backBottomHorizontalLine = network.createElement(Line, new LadderCoordinates(0, 1, 2, 2));
+        const frontBottomHorizontalLine = network.createElement(Line, new LadderCoordinates(1, 2, 2, 2));
         const bottomVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 2, 1));
 
         const nextElements = network.getNextElements(verticalLine);
 
         expect(nextElements.length).toBe(4);
-    })
-})
+        expect(nextElements.includes(topVerticalLine)).toBe(true);
+        expect(nextElements.includes(frontTopHorizontalLine)).toBe(true);
+        expect(nextElements.includes(frontBottomHorizontalLine)).toBe(true);
+        expect(nextElements.includes(bottomVerticalLine)).toBe(true);
+    });
 
-// (getNextElements) based on a grid of elements, check if nextElements are getted correctly (leftmost, rightmost, at the top, bottom, and middle --- check vertical and horizontal elements, only)
+    test("Check next element for horizontal element", () => {
+        const backTopVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 0, 1));
+        const frontTopVerticalLine = network.createElement(Line, new LadderCoordinates(2, 2, 0, 1));
+        const horizontalElement = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+        const frontHorizontalLine = network.createElement(Line, new LadderCoordinates(2, 3, 1, 1));
+        const backBottomVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 1, 2));
+        const frontBottomVerticalLine = network.createElement(Line, new LadderCoordinates(2, 2, 1, 2));
+
+        const nextElements = network.getNextElements(horizontalElement);
+
+        expect(nextElements.length).toBe(3);
+        expect(nextElements.includes(frontTopVerticalLine)).toBe(true);
+        expect(nextElements.includes(frontHorizontalLine)).toBe(true);
+        expect(nextElements.includes(frontBottomVerticalLine)).toBe(true);
+    });
+});
+
+describe("getPreviousElements", () => {
+    let simulation: Simulation;
+    let network: Network;
+
+    beforeEach(() => {
+        simulation = new Simulation();
+        network = simulation.createNetwork();
+    });
+
+    test("Check previous element for vertical element", () => {
+        const topVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 0, 1));
+        const topHorizontalLine = network.createElement(Line, new LadderCoordinates(0, 1, 1, 1));
+        const verticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 1, 2));
+        const bottomHorizontalLine = network.createElement(Line, new LadderCoordinates(0, 1, 2, 2));
+        const bottomVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 2, 3));
+
+        const previousElements = network.getPreviousElements(verticalLine);
+
+        expect(previousElements.length).toBe(3);
+        expect(previousElements.includes(topVerticalLine)).toBe(true);
+        expect(previousElements.includes(topHorizontalLine)).toBe(true);
+        expect(previousElements.includes(bottomHorizontalLine)).toBe(true);
+    });
+
+    test("Check next element for horizontal element", () => {
+        const topVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 0, 1));
+        const horizontalLine = network.createElement(Line, new LadderCoordinates(1, 2, 1, 1));
+        const backHorizontalLine = network.createElement(Line, new LadderCoordinates(0, 1, 1, 1));
+        const bottomVerticalLine = network.createElement(Line, new LadderCoordinates(1, 1, 1, 2));
+
+        const previousElements = network.getPreviousElements(horizontalLine);
+
+        expect(previousElements.length).toBe(3);
+        expect(previousElements.includes(topVerticalLine)).toBe(true);
+        expect(previousElements.includes(backHorizontalLine)).toBe(true);
+        expect(previousElements.includes(bottomVerticalLine)).toBe(true);
+    });
+});
+
 // (getPreviousElements) same as previous method
 // (play) check if set input is called for every element in the x = 0;
 // (play) check the propagation of elements that start with output = true;

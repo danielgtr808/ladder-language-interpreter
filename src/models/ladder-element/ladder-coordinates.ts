@@ -40,11 +40,11 @@ class LadderCoordinates {
     }
 
     isPreviousCoordinate(otherCoordinate: LadderCoordinates): boolean {
-        return this.xEnd == otherCoordinate.xInit && (
-            this.yInit == otherCoordinate.yInit ||
-            this.yEnd == otherCoordinate.yInit ||
-            this.yInit == otherCoordinate.yEnd
-        )
+        return this.xInit == otherCoordinate.xEnd && (
+            this.yEnd == otherCoordinate.yEnd ||
+            this.yInit == otherCoordinate.yEnd ||
+            this.yInit == otherCoordinate.yInit
+        );
     }
 }
 

@@ -74,7 +74,7 @@ class Network {
 
     getPreviousElements(referenceElement: LadderElement): LadderElement[] {
         return this.elements.filter(x => 
-            x.coordinates.isPreviousCoordinate(referenceElement.coordinates)
+            referenceElement.coordinates.isPreviousCoordinate(x.coordinates)
             // the algorithm will take the reference element along with the
             // others, so, another condition is attached to prevent this.
             && referenceElement !== x

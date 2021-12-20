@@ -1,10 +1,11 @@
+import BitAddress from "../../src/models/memory-manager/bit-address";
 import CounterDown from "../../src/models/ladder-element/counters/counter-down";
+import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
+import Line from "../../src/models/ladder-element/line/line";
 import Network from "../../src/models/network"
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
 import Simulation from "../../src/models/simulation";
-import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
-import Line from "../../src/models/ladder-element/line/line";
-import BitAddress from "../../src/models/memory-manager/bit-address";
+import TimerOff from "../../src/models/ladder-element/timers/timer-off";
 
 describe("calculateElementInput", () => {
     let network: Network;
@@ -212,9 +213,42 @@ describe("getPreviousElements", () => {
     });
 });
 
-// (getPreviousElements) same as previous method
-// (play) check if set input is called for every element in the x = 0;
-// (play) check the propagation of elements that start with output = true;
+describe("play", () => {
+    let simulation: Simulation;
+    let network: Network;
+
+    beforeEach(() => {
+        simulation = new Simulation();
+        network = simulation.createNetwork();
+    });
+
+    test("Check if 'setInput' is called for every element in the xInit = 0", () => {
+        const firstLine = network.createElement(Line, new LadderCoordinates(0, 1, 0, 0));
+        const setInputMockFirstLine = jest.fn((value: boolean, coordinate: LadderCoordinates) => { });
+        firstLine.setInput = setInputMockFirstLine;
+
+        const secondLine = network.createElement(Line, new LadderCoordinates(0, 1, 1, 1));
+        const setInputMockSecondLine = jest.fn((value: boolean, coordinate: LadderCoordinates) => { });
+        secondLine.setInput = setInputMockSecondLine;
+
+        network.play();
+
+        expect(setInputMockFirstLine.mock.calls.length).toBe(1);
+        expect(setInputMockSecondLine.mock.calls.length).toBe(1);
+    });
+
+    test("Check if elements that starts with high output propagates it's signal to other elements", () => {
+        const TOF = network.createElement(TimerOff, new LadderCoordinates(1, 2, 0, 0));
+        const firstLine = network.createElement(Line, new LadderCoordinates(2, 3, 0, 0));
+        const secondLine = network.createElement(Line, new LadderCoordinates(3, 4, 0, 0));
+
+        network.play();
+
+        expect(firstLine.input).toBe(true);
+        expect(secondLine.input).toBe(true);
+    })
+});
+
 // (play -add layer) check if lines from x0 propagates to other lines.
 // (resolve) check if all elements with changed have the "resolve" method called.
 // (resolve) check if chaining of elements occour (if the elements connected to a changed output are called)

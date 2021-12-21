@@ -40,6 +40,7 @@ class Line implements LadderElement {
         this._input = false;
         this.isActive = false;
         this._output = false;
+        this.changes = { input: false, internalState: false, output: false };
     }
 
     resolve(): void {

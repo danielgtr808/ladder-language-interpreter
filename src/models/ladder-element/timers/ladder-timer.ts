@@ -1,12 +1,11 @@
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
 import LadderElementChanges from "../ladder-element-changes";
 
-abstract class LadderTimer {
+class LadderTimer {
 
-    changes: LadderElementChanges;
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
+    changes: LadderElementChanges = { input: false, internalState: false, output: false };;
     readonly hasNoActivationTime: boolean = false;
+    readonly height: number = 1;
     presetTime: number = 0;
     timeBaseInMS: number = 1;
 
@@ -17,11 +16,8 @@ abstract class LadderTimer {
     protected _output: boolean;
 
     constructor(private _isTOF: boolean) {
-        // timerOff (TOF) timer starts with output equal to true and changes.output also equal to true.
-        // This happens because TOF only turns output OFF (false) after the preset time is reached, and
-        // the simulation must propagate, before the first evaluation, the high output of the TOF, for
-        // this to happen, the element must have at least one of the changes setted to true.
-        this.changes = { input: false, internalState: false, output: this._isTOF };
+        // timerOff (TOF) timer starts with output equal to true. This happens because TOF only turns 
+        // output OFF (false) after the preset time is reached.
         this._output = this._isTOF;
     }
 
@@ -58,7 +54,7 @@ abstract class LadderTimer {
     }
 
     reset(): void {
-        this.changes = { input: false, internalState: false, output: this._isTOF };
+        this.changes = { input: false, internalState: false, output: false };
         this._elapsedTime = 0;
         this._isActive = false;
         this._input = false;

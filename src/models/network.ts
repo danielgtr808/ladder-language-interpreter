@@ -16,10 +16,10 @@ class Network {
     elements: LadderElement[] = [];
     
     private _coordinatesInUse: CoordinateInUse[] = []
-    private _nextElementId: number = 0;
+    private _nextElementId: number = 1;
 
     constructor(
-        public readonly networkId: number,
+        public readonly id: number,
         public readonly memoryManager: MemoryManager,
         public readonly simulation: Simulation
     ) { }
@@ -39,28 +39,16 @@ class Network {
         const newElement = new elementConstructor(this.getBitAddress(""), coordinates, this._nextElementId, this);
         this._nextElementId++;
 
-        for(let y = 0; y < newElement.dimensions.height; y++) {
-            for(let x = 0; x < newElement.dimensions.width; x++) {
-                const calculatedCoordinates: LadderCoordinates = new LadderCoordinates(
-                    coordinates.xInit + x,
-                    coordinates.xEnd + x,
-                    coordinates.yInit + y,
-                    coordinates.yEnd + y
-                );
-                const elementToReplace = this.getElementByCoordinates(calculatedCoordinates);
+        for(let y = 0; y < newElement.height; y++) {
+            const calculatedCoordinates = coordinates.incrementY(y);
+            const elementToDelete = this.getElementByCoordinates(calculatedCoordinates);
 
-                if(!elementToReplace) {
-                    this._coordinatesInUse.push({ coordinates: calculatedCoordinates, element: newElement })
-                    continue;
-                };
+            if(elementToDelete) this.deleteElement(elementToDelete);
 
-                this.elements.splice(this.elements.findIndex(x => x == elementToReplace), 1);
-                // The "!" after the find function means that, it's guaranteed that the
-                // object will be founded. Thats because, the same function that create
-                // the elements (this function) also pushes then into usable coordinates
-                // array, so, it's guaranted that they will be founded. 
-                this._coordinatesInUse.find(x => x.element == elementToReplace)!.element = newElement;
-            }
+            this._coordinatesInUse.push({
+                coordinates: calculatedCoordinates,
+                element: newElement
+            });
         }
 
         this.elements.push(newElement)
@@ -78,7 +66,7 @@ class Network {
     getNextElements(referenceElement: LadderElement): LadderElement[] {
         return this._coordinatesInUse
             .filter(x => 
-                x.coordinates.isNextCoordinate(referenceElement.coordinates)
+                x.coordinates.isNextCoordinate(referenceElement.coordinates) && x.element !== referenceElement
             ).map(
                 x => x.element
             );
@@ -86,18 +74,20 @@ class Network {
 
     getPreviousElements(referenceElement: LadderElement): LadderElement[] {
         return this.elements.filter(x => 
-            x.coordinates.isPreviousCoordinate(referenceElement.coordinates)
+            referenceElement.coordinates.isPreviousCoordinate(x.coordinates)
             // the algorithm will take the reference element along with the
             // others, so, another condition is attached to prevent this.
             && referenceElement !== x
         );
     }
 
-    play() {
+    play(): LadderElement[] {
         this.elements.filter(x => x.coordinates.xInit == 0).forEach(x => {
             x.setInput(true, x.coordinates);
         });
         this.firstResolve();
+
+        return this.elements.filter(x => this.hasElementchanged(x.changes));
     }
 
     resolve(): LadderElement[] {
@@ -108,9 +98,6 @@ class Network {
             actualElement.changes.internalState = false;
             actualElement.resolve();
 
-            // A resolve calculates the new output of the element based on the input acquired
-            // on the last resolve loop, so, the "changed" setted to false, can turn into true
-            // gain, if the output changes.
             if(!actualElement.changes.output) continue;
 
             this.getNextElements(actualElement).forEach(x => {
@@ -130,6 +117,22 @@ class Network {
         this.elements.forEach(x => x.reset());
     }
 
+    private deleteElement(elementToDelete: LadderElement) {
+        this.elements.splice(this.elements.findIndex(x => x == elementToDelete), 1);
+
+        let quantityReplaced: number = 0;
+        for(let i = 0; i < this._coordinatesInUse.length; i++) {
+            const actualElement = this._coordinatesInUse[i];
+            if(actualElement.element != elementToDelete) continue;
+
+            this._coordinatesInUse.splice(this._coordinatesInUse.findIndex(x => x.element == elementToDelete ))
+            i--
+
+            quantityReplaced++;
+            if(quantityReplaced == elementToDelete.height) break;
+        }
+    }
+
     private firstResolve() {
         // The first resolve is distinct from the others, because, in this case,
         // it's used only to propagate the state from the elements that start with
@@ -147,10 +150,7 @@ class Network {
                 }
             })
         }
-
-        return initialElements;
     }
-
 
     private hasElementchanged(changesObject: LadderElementChanges): boolean {
         for (let value of Object.values(changesObject)) {

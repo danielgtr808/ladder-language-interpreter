@@ -1,15 +1,14 @@
 import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
-class SimpleOutput implements LadderElement {
+class Coil implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = false;
+    readonly height: number = 1;
 
     private _input: boolean = false;
     private _isActive: boolean = false;
@@ -79,4 +78,4 @@ class SimpleOutput implements LadderElement {
 
 }
 
-export default SimpleOutput
+export default Coil

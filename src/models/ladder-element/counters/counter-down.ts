@@ -1,9 +1,10 @@
 import LadderCoordinates from "../ladder-coordinates";
 import Network from "../../network";
-import LadderCounter, { _LadderCounter } from "./ladder-counter";
+import LadderCounter from "./ladder-counter";
 import BitAddress from "../../memory-manager/bit-address";
+import LadderElement from "../ladder-element";
 
-class CounterDown extends _LadderCounter implements LadderCounter {
+class CounterDown extends LadderCounter implements LadderElement {
         
     constructor(bitAddress: BitAddress, coordinates: LadderCoordinates, id: number, network: Network) {
         super(coordinates, id, network, true);

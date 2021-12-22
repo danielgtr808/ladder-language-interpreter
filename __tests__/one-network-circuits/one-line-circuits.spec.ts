@@ -1,7 +1,7 @@
 import Simulation from "./../../src/models/simulation";
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
 import Line from "./../../src/models/ladder-element/line/line";
-import SimpleOutput from "./../../src/models/ladder-element/output/simple-output";
+import Coil from "./../../src/models/ladder-element/output/coil";
 import TimerOn from "../../src/models/ladder-element/timers/timer-on";
 import TimerOff from "../../src/models/ladder-element/timers/timer-off";
 import CounterUp from "../../src/models/ladder-element/counters/counter-up";
@@ -46,7 +46,7 @@ test(`Active NoInput in series with lines and SimpleOutput at the end,
     const noInput = network.createElement(NoInput, new LadderCoordinates(0, 1, 0, 0));
     noInput.isActive = true;
     const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -65,7 +65,7 @@ test("TON in series with a simpleOutput, after two resolves, the simpleOutput in
     const timerON = network.createElement(TimerOn, new LadderCoordinates(0, 1, 0, 0));
     timerON.presetTime = 1;
     
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(1, 2, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(1, 2, 0, 0));
 
     simulation.play();
     simulation.resolve();
@@ -119,7 +119,7 @@ test("Elements connected to true output should have the input true before the fi
     const network = simulation.createNetwork();
     const timerOFF = network.createElement(TimerOff, new LadderCoordinates(0, 1, 0, 0));
     const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(2, 3, 0, 0));
 
     simulation.play();
 
@@ -174,7 +174,7 @@ test("On reseting the CTU, all the elements connected to it, should have negativ
     const network = simulation.createNetwork();
     const counterUp = network.createElement(CounterUp, new LadderCoordinates(0, 1, 0, 0));
     const line = network.createElement(Line, new LadderCoordinates(1, 2, 0, 0));
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(2, 3, 0, 0));
     counterUp.presetValue = 1;
 
     simulation.play();

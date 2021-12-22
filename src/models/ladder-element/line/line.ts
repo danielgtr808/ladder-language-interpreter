@@ -1,15 +1,14 @@
 import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
 import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
 class Line implements LadderElement {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly dimensions: LadderDimensions = { height: 1, width: 1 };
     readonly hasNoActivationTime: boolean = true;
+    readonly height: number = 1;
     isActive: boolean = false;
 
     private _input: boolean = false;
@@ -41,6 +40,7 @@ class Line implements LadderElement {
         this._input = false;
         this.isActive = false;
         this._output = false;
+        this.changes = { input: false, internalState: false, output: false };
     }
 
     resolve(): void {

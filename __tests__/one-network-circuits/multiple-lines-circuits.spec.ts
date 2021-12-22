@@ -1,6 +1,6 @@
 import Simulation from "./../../src/models/simulation";
 import NoInput from "./../../src/models/ladder-element/inputs/no-input";
-import SimpleOutput from "./../../src/models/ladder-element/output/simple-output";
+import Coil from "./../../src/models/ladder-element/output/coil";
 import CounterUp from "./../../src/models/ladder-element/counters/counter-up";
 import LadderCoordinates from "../../src/models/ladder-element/ladder-coordinates";
 import Line from "./../../src/models/ladder-element/line/line";
@@ -16,7 +16,7 @@ test(`Circuit with a counter connected to two noInput(one on count
         const noInputReset = network.createElement(NoInput, new LadderCoordinates(0, 1, 1, 1));
         const counterUp = network.createElement(CounterUp, new LadderCoordinates(1, 2, 0, 0));
         counterUp.presetValue = 2;
-        const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+        const simpleOutput = network.createElement(Coil, new LadderCoordinates(2, 3, 0, 0));
 
         simulation.play();
         simulation.resolve();
@@ -46,7 +46,7 @@ test(`Latching circuit without a break contact`, () => {
     const line = network.createElement(Line, new LadderCoordinates(1, 1, 0, 1));
     const noInputLatch = network.createElement(NoInput, new LadderCoordinates(0, 1, 1, 1));
     noInputLatch.address = "Q0.0"
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(1, 2, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(1, 2, 0, 0));
     simpleOutput.address = "Q0.0"
 
     simulation.play();
@@ -94,7 +94,7 @@ test(`Latching circuit with a break contact`, () => {
     const noInputLatch = network.createElement(NoInput, new LadderCoordinates(0, 1, 1, 1));
     const ncInputBreak = network.createElement(NcInput, new LadderCoordinates(1, 2, 0, 0))
     noInputLatch.address = "Q0.0"
-    const simpleOutput = network.createElement(SimpleOutput, new LadderCoordinates(2, 3, 0, 0));
+    const simpleOutput = network.createElement(Coil, new LadderCoordinates(2, 3, 0, 0));
     simpleOutput.address = "Q0.0"
 
     simulation.play();

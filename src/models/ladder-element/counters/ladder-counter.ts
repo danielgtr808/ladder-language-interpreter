@@ -1,23 +1,12 @@
-import BitAddress from "../../memory-manager/bit-address";
 import Network from "../../network";
 import LadderCoordinates from "../ladder-coordinates";
-import LadderDimensions from "../ladder-dimensions";
-import LadderElement from "../ladder-element";
 import LadderElementChanges from "../ladder-element-changes";
 
-interface LadderCounter extends LadderElement {
-    readonly currentValue: number;
-    presetValue: number;
-    readonly resetSegmentCoordinates: LadderCoordinates;
-
-    resetInput(value: boolean): void
-}
-
-export abstract class _LadderCounter {
+class LadderCounter {
 
     changes: LadderElementChanges = { input: false, internalState: false, output: false };
-    readonly dimensions: LadderDimensions = { height: 2, width: 1 };
     readonly hasNoActivationTime: boolean = false;
+    readonly height: number = 2;
     readonly resetSegmentCoordinates: LadderCoordinates;
     
     protected _currentValue: number = 0;

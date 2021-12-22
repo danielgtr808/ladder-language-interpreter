@@ -4,6 +4,10 @@ class MemoryManager {
 
     bitAddresses: BitAddress[] = [];
 
+    findBitAddress(address: string): BitAddress | undefined {
+        return this.bitAddresses.find(x => x.address == address);
+    }
+
     findOrCreateBitAddress(address: string): BitAddress {
         if(address == "") return new BitAddress("");
 
@@ -13,10 +17,6 @@ class MemoryManager {
         const newBitAddress = new BitAddress(address);
         this.bitAddresses.push(newBitAddress);
         return newBitAddress;
-    }
-
-    findBitAddress(address: string): BitAddress | undefined {
-        return this.bitAddresses.find(x => x.address == address);
     }
 
 }

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <article>
+        <h1>Overview</h1>
+        <section>
+            <h2>Document category</h2>
+            <p>System documentation: This document is aimed to developers and maintainers to help them modify the system and/or extend him (add new functionalities).</p>
+        </section>
+        <section>
+            <h2>What is ladder language interpreter</h2>
+            <p>Library created in TypeScript (version 4.5.4). The library provides a way to create ladder logic diagrams through objects (each ladder logic element has its own class) and simulate then, allowing to study the behavior of a specific diagram.</p>
+        </section>
+        <section>
+            <h2>Justification</h2>
+            <p>The library was created to be used on two other projects: A simulator for ladder logic (with graphical interface) and a supervisory system (based on ladder logic, also with a graphical interface). Creating a library allow for code reusability on both projects and keep the separation of concerns in code (where the abstract part, that is this code, will not be mixed up with code that manipulates the graphical interface, for instance).</p>
+        </section>
+        <section>
+            <h2>Ladder logic</h2>
+            <div>
+                <p>Ladder logic is a visual programing language that is used to develop software for PLC (programmable logic controllers). The language can represent circuit diagrams of relay logic (basically, electric circuits where the logic is implemented through relays).</p>
+                <p>The ladder language is standardized by IEC 61131-3, that describes what elements the language should have and how the diagrams should be interpreted in certain situations.</p>
+                <p>In the <a href="#figure-31de8b24">Figure 1</a>, there is an example of a ladder diagram:</p>
+            </div>
+            <figure id="figure-31de8b24" >
+                <figcaption>Figure 1: A simple ladder diagram, composed of two lines.</figcaption>
+                <img src="./images/A simple ladder diagram, composed of two lines.png">
+            </figure>
+            <div>
+                <p>It’s a simple diagram, made of two lines. In the left, there is two elements, they are considered inputs (because they receive signal from some external source) being the one in the first line called “Normally open relay” and on the second line being called “Normally closed relay”. In the right, there is the output (because it emits a signal to some external system), it’s known as “coil”. Between these elements, there is lines, they can be placed both vertically and horizontally.</p>
+                <p>The diagram has to imaginary rails, one in the left (before any element) and one on the right (after all elements), the left rail works like a live wire, and the one in the right works like a ground, making the flow of energy go from left to right, top to bottom.</p>
+                <p>The diagram on the <a href="#figure-31de8b24">Figure 1</a> is disabled, the <a href="#figure-288ad616">Figure 2</a> shows the same diagram, but enabled.</p>
+            </div>
+            <figure id="figure-288ad616" >
+                <figcaption>Figure 2: A simple ladder diagram enabled, with two lines.</figcaption>
+                <img src="./images/A simple ladder diagram enabled with two lines.png">
+            </figure>
+            <div>
+                <p>The green line shows the energy flow, starting in the elements on the left, and going to the elements on the right. Both relays have their inputs high, but only the normally closed relay propagates the signal, the other is open, so there is no way to the signal to flow.</p>
+                <p>The elements can communicate with an external system through something called “Bit address”. Bit address is a code that can be give to the ladder logic elements and is related to the PLC I/O ports. The <a href="#figure-e83ef928">Figure 3</a> shows a simple ladder circuit with some bit addresses attached to the elements.</p>
+            </div>
+            <figure id="figure-e83ef928" >
+                <figcaption>Figure 3: Ladder diagram with one line and three bit addresses.</figcaption>
+                <img src="./images/Ladder diagram with one line and three bit addresses.png">
+            </figure>
+            <p>The bit address has the following pattern: [Type][Slot].[port]. The type, in this library, can be input (I) or output (O). The “slot” and “port” can be any integer, but, they have a meaning in a PLC, that can be explained with the help of the <a href="#figure-795e9977">Figure 4</a>.</p>
+            <figure id="figure-795e9977" >
+                <figcaption>Figure 4: Illustration of I/O modules of a PLC.</figcaption>
+                <img src="./images/Illustration of IO modules of a PLC.png">
+            </figure>
+            <div>
+                <p>A PLC has a limited number of I/O ports. These ports can be attached to the PLC through something called a module. A PLC also has a limited number of modules that can be attached to him. Each module is connected to a slot (the PLC in the <a href="#figure-795e9977">Figure 4</a> has 4 slots, ranging from 0 to 3).</p>
+                <p>So, the bit address: I1.0 has a reference to the module in the slot 0, and to the port 0 (IN0 in the <a href="#figure-795e9977">Figure 4</a>), the I1.1 references the same module in slot 1 (IN1 in the <a href="#figure-795e9977">Figure 4</a>) and O3.0 is related to the module on slot 3, slot 0 (0 in the <a href="#figure-795e9977">Figure 4</a>).</p>
+                <p>When the PLC receives a high signal (an electric signal that usually range from 5 to 24 volts) in the port 0 of the module in the slot 1, the relay with the bit address I1.0 will change. If it’s a normally open relay, it will turn into a normally closed, and vice-versa.</p>
+                <p>When the output coil in the ladder diagram receives a high signal, the PLC emits a high signal in the port of corresponding bit address (based on  <a href="#figure-e83ef928">Figure 3</a>, it’s the port 0 on the module in the slot 3). </p>
+                <p>If the input port stops receiving the high signal, the relay in the ladder diagram will return to its original state, the same happens with the output port if the output coil in the ladder diagram stops receiving a high signal.</p>
+            </div>
+        </section>
+        <section>
+            <h2>Installation instructions</h2>
+            <div>
+                <p>Clone the project from the repository.</p>
+                <p>Install npm (if your don’t have it installed).</p>
+                <p>In the project folder, run the command (on terminal, cmd, powershell, etc…): npm install.</p>
+                <p>After installing the dependencies, install the angular cli (can be installed through npm).</p>
+                <p>In the project folder, run the command: ng serve &#45;&#45;open</p>
+                <p>The project will transpile, bundle and then open in your default browser.</p> 
+            </div>
+        </section>
+    </article>
+    <article>
+        <h1>Project requirements</h1>
+        <section>
+            <p>The project requirements are described from the user perspective, that is, the features the user can use and the behavior that the user can expect.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="centralized-cell">#</th>
+                        <th class="centralized-cell">Requirement</th>
+                        <th class="centralized-cell">Implemented</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="centralized-cell">P1</td>
+                        <td>The library should have the capability of exporting a diagram in JSON format.</td>
+                        <td class="centralized-cell">No</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">P2</td>
+                        <td>The library should have the capability of importing a ladder logic diagram in JSON format.</td>
+                        <td class="centralized-cell">No</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">P3</td>
+                        <td>The user should have control of when the simulation will advance.</td>
+                        <td class="centralized-cell">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">P4</td>
+                        <td>The user should have control of the speed of the simulation advance.</td>
+                        <td class="centralized-cell">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">P5</td>
+                        <td>The library should notify the user of all the changes on the elements after each step of the simulation</td>
+                        <td class="centralized-cell">No</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">P6</td>
+                        <td>Networks and elements must behave as described by IEC 61131-3</td>
+                        <td class="centralized-cell">Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </article>
+    <article>
+        <h1>System design and structure</h1>
+        <section>
+            <p>
+                “System design” is defined as: the components of a system (concepts, data types, functions, interfaces, modules, etc...) and how they interact with each other to satisfy the specified requirements.
+            </p>
+            <p>
+                This section is better read as a consultation because the components will be described, but context where they are applied will not be provided. It’s recommended that you read the chapter “Implementations details“ first, get some context of where the components where used, and then come back here, to get a complete description of them.
+            </p>
+        </section>
+        <section>
+            <h2>Dependencies</h2>
+            <p>Below, is a list of the libraries and frameworks that the system needs to function properly.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework or library</th>
+                        <th>Version</th>
+                        <th>Is dev. dependency?</th>
+                        <th>Why use this dependency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="centralized-cell">@types/jest</td>
+                        <td class="centralized-cell">27.0.3</td>
+                        <td class="centralized-cell">Yes</td>
+                        <td>Add static typing for the jest framework</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">jest</td>
+                        <td class="centralized-cell">27.4.5</td>
+                        <td class="centralized-cell">Yes</td>
+                        <td>Test the library functions.</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">ts-node</td>
+                        <td class="centralized-cell">10.4.0</td>
+                        <td class="centralized-cell">Yes</td>
+                        <td>Run typescript code without transpiling it.</td>
+                    </tr>
+                    <tr>
+                        <td class="centralized-cell">ts-jest</td>
+                        <td class="centralized-cell">27.1.1</td>
+                        <td class="centralized-cell">Yes</td>
+                        <td>Make Jest works with typescript.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Models</h2>
+            <section>
+                <h3>Simulation</h3>
+                <p>Is the class used for the user to create all ladder elements, also controls the simulation, that is: when to play, advance and stop.</p>
+                <section>
+                    <h4>Constructor</h4>
+                    <div>
+                        <p>
+                            On creating an instance of this class there is one optional parameter called “timeStepInMs”, that is also a read only properly for this class, is recommended that the value passed to be lesser than the step of any timer on the simulation (todo: add timer explanation) and be a multiple of this timer, example:
+                        </p>
+                        <p>
+                            If the simulation has one timer on (TON) where the step is 10 ms, the “timeStepInMs” must be lesser than 10 and be a multiple of this number (like 5, 2, 1, 0.5, 0.25, etc…). If the simulation step is greater than the lesser timer step, or is not a multiple, this can lead to timers being activated lately, for instance:
+                        </p>
+                        <p>
+                            Suppose the simulation step is 9 ms, and there is a timer with 10ms step and a preset of 2. That means, the timer should fire after 20ms, but the simulation steps every 9 ms, that means, the timer will fire on 27ms.
+                        </p>
+                    </div>
+                </section>
+                <section>
+                    <h4>Properties</h4>
+                    <h5>timeStepInMs</h5>
+                </section>
+            </section>
+        </section>
+    </article>
+
+
+
+
+Properties
+
+timeStepInMs:
+	What: Is the minimum amount of time the simulation advances very time the “resolve” method is called.
+	Why: The type of simulation of this simulation is discrete-event simulation, that means, the time does not increment continuously, but steps in a minimum amount of time. This amount of time is defined by this property.
+
+networks: 
+What: An array of all networks created from the method “createNetwork”.
+Why: To simplify the resolve of all the networks of the simulation (instead of calling the resolve method of each network, call it only once through the simulation instance).
+
+memoryManager: 
+What: Is an instance of the class “MemoryManager”.
+Why: Based on diagram needs, some elements must have a bit address, then, this class is used for this.
+
+_nextNetworkId: 
+What: Every network created by the “createNetwork” method, receives an id, that is stored in this property, and then, is automatically incremented by the method.
+Why: The library was designed to be used inside a web worker, the memory from the two threads (main and web work) is separated, that means, it’s not possible to identify an object by reference, them, an identifier is associated with each network instance created by simulation class.
+
+_timeInMs:
+	What: is the current time of the simulation, is incremented with the value of “timeStepInMs” every time the “resolve” method is called.
+	Why: to keep the time of the simulation. Currently, this value has no use, but can be used in a graphical interface to show the time passing on the simulation.
+
+Methods:
+
+timeInMs: 
+	What: Get the current time of the simulation
+	Why: The property “_timeInMs” is private to prevent the user from altering the simulation time manually, then, for the user to have access to the data, is used a getter.
+
+createNetwork:
+	What: Creates a new network, add it to the “networks” property and then return the created network.
+	Why: Is used to associate an id to each network and to keep the track of all the networks present on the simulation.
+
+play:
+	What: Call the play method of all the networks of the simulation	
+	Why: Before the simulation starts, all elements are disabled, that means, there is no energized elements, not even the ones on the leftmost of the network, this method is used to start these elements. Also, there are elements (like the timer off) that starts with a high output, this method also propagates this signal to other elements before the first resolve.
+
+resolve
+	What: Call the resolve method of all the networks of the simulation
+	Why: The simulation advances in steps, that means, the simulation does some calculation after receiving an order to do so, and then stops after some calculation, and then starts again after receiving another order and then repeat this process. The resolve method is the order that the simulation receives to starts calculating.
+
+stop
+	What: Call the stop method of all the networks of the simulation
+	Why: If the users want to stop the simulation, then all the elements must be disabled again, this method facilitated this task, because instead of calling the stop method for each network, user call it only once from here. It also resets the simulation time (a private property).
+
+Network
+Is the class that represents the networks (also called “rungs”) of the ladder logic diagram.
+
+Constructor
+
+	The constructions have three parameters, that are also properties, they are:
+	
+networkId:
+	what: Is a unique identifier for all the networks of the simulation
+	why: todo: add hyperlink to the explanation on simulation chapter
+
+memoryManager:
+	what: Is an instance of the class “MemoryManager”
+	why: When associating a bit address to some element, its necessary to check if this address already exists, if not, create an instance of the class “BitAddress” for the it. This process is made by the class “MemoryManager”.
+
+simulation:
+	What: Is an instance of the class “Simulation”
+	Why: Timer elements needs to know the simulation step to increment it’s internal clock, it’s accessed through the “simulation” property of the network it belongs.
+
+Properties:
+
+elements
+What: An array of all elements created from the method “createElement”.
+Why: To simplify the resolve of all elements contained in a network (instead of calling the resolve method of each network, call it only once through the network instance). Also, for some calculations, it’s necessary to consider a group of elements (for instance, calculating the input signal of an element).
+
+_coordinatesInUse:
+	What: Array that keeps a relationship between the network coordinates occupied and the element that is occupying.
+	Why: Some elements have a heigh and/or width different from 1, that means, it occupies more than one place in the network. Elements with height different from 1 have more than one input, so, based on this property, is possible to propagate a signal to the correctly input of an element.
+	To-do: add an illustrated example (using a counter, for example).
+
+_nextElementId:
+What: Every element created by the “createElement” method, receives an id, that is stored in this property, and then, is automatically incremented by the method.
+Why: The same explanation as the why networks have id, check this: todo: add hyperlink to simulation explanation of network id.
+
+Methods:
+
+calculateElementInput:
+	what: Receives a ladder element and then, based on it’s coordinates, calculates the input signal.
+	Why: Some calculation is required to define the input of an element, so, it’s best to put it all inside a method. An element inputs is high if at least one of the previous elements has a high output, and low if all of them are low. If an element is at the leftmost, their input is high automatically.
+
+Parameters:
+	element: Is the ladder element that will have the input calculated.
+	 
+createElement:
+	What: A function that create a new ladder element and, if necessary, delete other elements that is located on the coordinates that will be occupied by the new element.
+	Why: The elements are positioned on the network based on a coordinate system, that means, to prevent two elements from occupying the same position, managing the element list is necessary, and it’s done inside this function. “Managing” means: deleting the previous element on the specified coordinates from the “elements” and “_coordinatesInUse” properties and then adding the new element into these properties.
+
+Parameters:
+	elementConstructor: Is the type of the ladder element that will be built by the method.
+	coordinates: Top left coordinates where the ladder element will be placed.
+
+getBitAddress:
+	What: Return a bitAddress with the specified address.
+	Why: It’s a wrapper for the memoryManager, so the ladder element don’t need to access the memoryManager object directly. 
+
+Parameters:
+	address: Is the address of the bitAddress.
+
+getElementByCoordinates:
+	What: Returns a ladder element (if it exists) based on some coordinates.
+	Why: Finding a specific element by their coordinates is a common request from some other methods, also, acts like a syntax sugar (making the user write less code to get the same result).
+
+Parameters:
+	coordinates: The coordinates of the ladder element that must be found.
+
+getNextElements:
+	What: Get the elements connected a specific element output.
+	Why: Knowing the next element is important to propagate the output signal to other elements. The algorithm of a “next” element is explained in (todo: add the hyperlink to the explanation in ladderCoordinates).
+
+Parameters:
+	referenceElement: Is the element that have the coordinates that will be used to get the elements considered “next”.
+
+getPreviousElements:
+	What: Get all the elements that have the output connected to a specific element input.
+	Why: Knowing the previous elements is important to calculate one element input, as described in: (todo: add reference to calculateInput method).
+
+play:
+	What: Initialize all the elements in the leftmost of the network and call the first resolve.
+	Why: As explained in the (todo: add hyperlink to play method on simulation), the elements must be initialized before the first simulation resolve, this method does it with the elements present on the network.
+
+resolve:
+	What: Call the resolve method of all the elements of the network.
+	Why: As explained in the (todo: add hyperlink to resolve method on simulation), the simulation advance in steps, these steps are calculations related to the propagation of the signal, and these calculations are made on the “resolve” method of each ladder element. This method facilitates the task of calling the resolve of the elements contained on one network.
+
+Stop:
+	What: Call the reset method on all ladder elements of the network.
+	Why: As explained in the (todo: add hyperlink to stop method on simulation), when the user wants to stop the simulation, all the elements must be disabled, the calling for the reset method, present on each element, is done in this method.
+ simulation time (a private property).
+
+firstResolve
+	What: executes the first resolve (when the play method is executed).
+	Why: Some elements starts with a high output event with a low input (timer off, for example), the propagation of the signal on lines are considered to be instantaneous, that means, if a line receive a high signal on the input, the simulation don’t need a extra step to the output be high, it will be propagate on the same step (more details on: todo: add a link to the ladderElement explanation of propagation).
+
+hasElementchanged:
+	What: Check if a specific element changed.
+	Why: This method works like a syntax sugar, to hide the loop that is done in the properties of the object that represent the changes on a ladder element.
+
+Parameters:
+	changesObject: Is the object that represent the changes of the element.
+
+
+LadderElement
+Is the interface used to describe the properties and methods of all ladder elements (counters, timers, inputs, etc…).
+
+address:
+	Is the string of the bit address associated with the ladder element.
+
+changes:
+	Is an object that marks all the changes of the object. The input changes when there is a change in the input signal, the output can change after the “resolve” method is called (the logic is based on each element implementation), and the internalState is for when any property inside the element change, for e.g: The timer currentTime, the counter currentValue, when any element changes “isActive”, etc…
+
+coordinates:
+	Describes the coordinates where the element will be in the network.
+
+hasNoActivationtime:
+	todo: add reference to a simulation explanation
+
+height:
+	Is the height (how many y coordinates) the element occupies on the network.
+
+id:
+	Is a identifier of the object inside a network. 
+
+input:
+	Property that holds the input state (the signal that is entering) of the element
+
+isActive:
+	Property that holds the isActive state of the ladder element. Active is a Boolean value that describes how an element works. The only elements that have two states are the inputs.
+
+network:
+	Property that holds a reference to the network where the element is located.
+
+output:
+	Property that holds the output state (the signal that the element is emitting) of the element.
+
+reset:
+	Is the method that disables the ladder element, that is, sets the input, output, isActive and changes to false.
+
+resolve:
+	Is the method that calculates the output and, for timers, increments the current time.
+
+setInput:
+	is the setter of the input property.
+
+Parameters:
+	value: is the value that will be associated to the input property.
+	segmentCoordinates: Some elements have height greater than 1, that means, the element has more than one input. The input is selected through this parameter.
+
+
+
+</body>
+</html>

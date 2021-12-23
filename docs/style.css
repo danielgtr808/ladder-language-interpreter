@@ -1,0 +1,162 @@
+/* 
+    HTML / CSS autonumber headings
+    src: http://stackoverflow.com/a/535390/819887
+*/
+
+html {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+:root {
+    --anchor-color-dark: #39C5FF;
+    --anchor-color-light: #1A0DAB;
+    --background-color-dark: #262626;
+    --background-color-light: #FFFFFF;
+    --table-border-color-dark: #F6F6F6;
+    --table-border-color-light: #000000;
+    --text-color-dark: #F6F6F6;
+    --text-color-light: #000000;
+}
+
+body {
+    --anchor-color: var(--anchor-color-light);
+    --background-color: var(--background-color-light);
+    --table-border-color: var(--table-border-color-light);
+    --text-color: var(--text-color-light);
+
+    background-color: var(--background-color);
+    color: var(--text-color);
+    counter-reset: primary-title;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    font-style: normal;
+    font-size: 20px;
+    font-weight: normal;
+    gap: 56px;
+    line-height: 150%;
+    padding: 140px 86px 140px 86px;
+    width: 992px;
+}
+
+.dark-theme {
+    --anchor-color: var(--anchor-color-dark);
+    --background-color: var(--background-color-dark);
+    --table-border-color: var(--table-border-color-dark);
+    --text-color: var(--text-color-dark);
+}
+
+article {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+h1 {
+    counter-reset: secondary-title;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+h1:before {
+    counter-increment: primary-title;
+    content: counter(primary-title) ". ";
+}
+
+h2 {
+    counter-reset: tertiary-title;
+    text-transform: uppercase;
+}
+
+h2:before {
+    counter-increment: secondary-title;
+    content: counter(primary-title) "." counter(secondary-title) ". ";
+}
+
+h3 {
+    counter-reset: quaternary-title;
+    font-weight: bold;
+}
+
+h3:before {
+    counter-increment: tertiary-title;
+    content: counter(primary-title) "." counter(secondary-title) "." counter(tertiary-title) ". ";
+}
+
+h4 {
+    counter-reset: quintenary-title;
+}
+
+h4:before {
+    content: counter(primary-title) "." counter(secondary-title) "." counter(tertiary-title) "." counter(quaternary-title) ". ";
+    counter-increment: quaternary-title;
+}
+
+h5 {
+    font-style: italic;
+}
+
+h5:before {
+    content: counter(primary-title) "." counter(secondary-title) "." counter(tertiary-title) "." counter(quaternary-title) "." counter(quintenary-title) ". ";
+    counter-increment: quintenary-title;
+}
+
+p {
+    line-height: 150%;
+    text-indent: 46px;
+}
+
+a {
+    color: var(--anchor-color);
+    text-decoration: none;
+}
+
+figure {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    justify-content: center; 
+}
+
+figcaption {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 150%;
+}
+
+img {
+    max-width: 650px;
+}
+
+table {
+    width: 100%;
+}
+
+table, td, th {
+    border: 1px solid var(--table-border-color);
+}
+
+td {
+    padding: 8px 16px 8px 16px;
+}
+
+th {    
+    font-weight: bold;
+}
+
+.centralized-cell {
+    padding: 12px 24px 12px 24px;
+    text-align: center;
+    vertical-align: middle;
+}
